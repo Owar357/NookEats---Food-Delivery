@@ -17,8 +17,9 @@ return new class extends Migration
             $table->string('apellido',30);
             $table->string('correo',100)->unique();
             $table->string('contraseña',100);
-            $table->string('imagen_perfil_r',255);
+            $table->string('imagen',300);
             $table->date('fechaNac');
+            $table->string('rol',2)->default('U');
             $table->string('codigo_perfil',15)->unique();
             $table->timestamps();
         });

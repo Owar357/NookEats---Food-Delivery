@@ -19,8 +19,8 @@ return new class extends Migration
             $table->string('metodo_pago',2);
             $table->time('hora_entrega');
             $table->string('foto_entrega',250);
-            $table->unsignedBigInteger('repartidor_id');
-            $table->foreign('repartidor_id')->references('id')->on('repartidores');
+            $table->unsignedBigInteger('usuario_id');
+            $table->foreign('usuario_id')->references('id')->on('usuarios');
             $table->timestamps();
         });
     }

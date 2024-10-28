@@ -9,18 +9,15 @@ class Pedido extends Model
 {
     use HasFactory;
     
-    public function  repartidor()
-    {
-        return $this -> belongsTo(Repartidor::class);
-    } 
-    
     public function  pedidoComidas()
     {
-        return $this ->hasMany(PedidoComida::class);
+        return $this->hasMany(PedidoComida::class);
     } 
+  
 
-    public function  usuarioPedidos()
+    public function usuario()
     {
-        return $this -> HasMany(UsuarioPedido::class);
-    } 
+        return $this->belongsTo(Usuario::class);
+    }
+  
 }

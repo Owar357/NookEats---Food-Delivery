@@ -10,11 +10,6 @@ class ComidaRestaurante extends Model
     use HasFactory;
 
     
-    public function  comida()
-    {
-        return $this -> belongsTo(Comida::class);
-    }
-
     public function  categoria()
     {
         return $this -> belongsTo(Categoria::class);

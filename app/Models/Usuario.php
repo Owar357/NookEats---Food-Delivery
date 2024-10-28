@@ -9,23 +9,15 @@ class Usuario extends Model
 {
     use HasFactory;
 
-    public function  repartidor()
-    {
-        return $this -> hasOne(Repartidor::class);
-    }
-
+    
     public function  restaurante()
     {
         return $this -> hasOne(Restaurante::class);
     }
 
-    public function  usuarioPedidos()
+    public function pedidos()
     {
-       return $this->hasMany(UsuarioPedido::class);
+        return $this -> hasMany(Restaurante::class);
     }
-
-    public function  roles()
-    {
-       return $this->hasMany(Rol::class);
-    }
+ 
 }

@@ -12,10 +12,12 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('restaurantes', function (Blueprint $table) {
-            $table->string('codigo_operacion',11)->primary();
+            $table->id();
+            $table->string('codigo_operacion',11);
+            $table->string('imagen',300);
             $table->string('ubicacion',255);
             $table->string('telefono',15)->unique();
-            $table->string('telefono_secundario',15)->unique();
+            $table->string('telefono_secundario',15)->nullable();
             $table->string('descripcion',300);
             $table->string('modelo_negocio',15);
             $table->enum('validacion_restaurante',['P','A','R'])->default('P');

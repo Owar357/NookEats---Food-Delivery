@@ -74,21 +74,9 @@ class UsuarioController extends Controller
                 $registroUsuario->contraseña  =  $request->contraseña;
                 $registroUsuario->imagen_perfil_r  =  $request->imagen_perfil_r;
                 $registroUsuario->fechaNac  =  $request->fechaNac;
-
                 $registroUsuario->codigo_perfil  =  $this->GeneradorCodigoPerfil($request->nombre, $request->apellido);;
             
                 if ($registroUsuario->save()) {
-                
-                $asignarol = new Rol();
-                
-                $asignarol -> nombre = 'U';
-                $asignarol -> usuario_id = $registroUsuario -> id;
-
-                  if(!$asignarol ->save())
-                  {
-                     throw new \Exception('No se puede asignar el rol al usuario');
-                  } 
-                  DB::commit();
                     return response()->json([
                         'status' => 'created',
                         'data' => $registroUsuario,

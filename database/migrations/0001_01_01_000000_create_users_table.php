@@ -17,6 +17,10 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+            $table->string('imagen', 300)->nullable(); // imagen (de "usuarios")
+            $table->date('fecha_nac')->nullable(); // fecha de nacimiento (de "usuarios")
+            $table->string('rol', 2)->default('U'); // rol del usuario (de "usuarios")
+            $table->string('codigo_perfil', 15)->unique()->nullable(); // código de perfil (de "usuarios")
             $table->rememberToken();
             $table->timestamps();
         });

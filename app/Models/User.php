@@ -44,4 +44,16 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    public function  restaurante()
+    {
+        return $this -> hasOne(Restaurante::class);
+    }
+
+    public function pedidos()
+    {
+        return $this -> hasMany(Restaurante::class);
+    }
+
+
 }

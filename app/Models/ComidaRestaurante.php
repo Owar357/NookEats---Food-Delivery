@@ -9,18 +9,13 @@ class ComidaRestaurante extends Model
 {
     use HasFactory;
 
-    
+    protected $table  = "Comidas_Restaurante"; 
+
     public function  categoria()
     {
         return $this -> belongsTo(Categoria::class);
     }
 
-    
-    public function  restaurante()
-    {
-        return $this -> belongsTo(Restaurante::class);
-    }
-    
 
     public function  pedidoComidas()
     {

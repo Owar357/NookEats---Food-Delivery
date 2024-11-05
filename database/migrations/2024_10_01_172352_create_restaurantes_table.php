@@ -23,8 +23,8 @@ return new class extends Migration
             $table->enum('validacion_restaurante',['P','A','R'])->default('P');
             $table->unsignedBigInteger('tipo_negocio_id');
             $table->foreign('tipo_negocio_id')->references('id')->on('tipo_negocios');
-            $table->unsignedBigInteger('usuario_id');
-            $table->foreign('usuario_id')->references('id')->on('usuarios');
+            $table->unsignedBigInteger('user_id');
+            $table->foreign('user_id')->references('id')->on('users');
             $table->timestamps();
         });
     }

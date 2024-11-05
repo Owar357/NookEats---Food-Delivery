@@ -13,4 +13,10 @@ class Categoria extends Model
     {
         return $this -> hasMany(ComidaRestaurante::class);
     }
+
+    public function  restaurante()
+    {
+        return $this -> belongsTo(Restaurante::class);
+    }
+    
 }

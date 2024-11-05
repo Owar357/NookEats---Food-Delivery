@@ -14,15 +14,15 @@ return new class extends Migration
         Schema::create('comidas_restaurante', function (Blueprint $table) {
             $table->id();
             $table->decimal('precio',10,2);
-            $table->nombre('nombre',125);
+            $table->decimal('precioDescuento',10,2);
+            $table->string('nombre',125);
             $table->string('imagen',300);
             $table->decimal('precio',10,2);
-            $table->string('decripcion',300);
-            $table->boolean('disponibilidad');
-            $table->boolean('promocion_activa');
-            $table->decimal('descuento_porcentaje',5,2);
-            $table->string('restaurante_id',11);
-            $table->foreign('restaurante_id')->references('id')->on('restaurantes');    
+            $table->string('descripcion',300);
+            $table->boolean('disponibilidad')->default(true);
+            $table->boolean('promocion_activa')->default(false);
+            $table->date('fecha_promfinal')->nullable();
+            $table->decimal('descuento',5,2)->nullable();
             $table->unsignedBigInteger('categoria_id');
             $table->foreign('categoria_id')->references('id')->on('categorias');
             $table->timestamps();

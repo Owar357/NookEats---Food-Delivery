@@ -21,9 +21,9 @@ class Restaurante extends Model
     }
 
 
-    public function  comidasRestaurante()
+    public function  categorias()
     {
-       return $this->hasMany(ComidaRestaurante::class);
+       return $this->hasMany(Categoria::class);
     }
 
     public function  horarios()

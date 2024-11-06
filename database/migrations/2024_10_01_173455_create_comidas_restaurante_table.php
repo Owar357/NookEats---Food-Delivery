@@ -14,10 +14,9 @@ return new class extends Migration
         Schema::create('comidas_restaurante', function (Blueprint $table) {
             $table->id();
             $table->decimal('precio',10,2);
-            $table->decimal('precioDescuento',10,2);
+            $table->decimal('precioDescuento',10,2)->default(0.00);
             $table->string('nombre',125);
             $table->string('imagen',300);
-            $table->decimal('precio',10,2);
             $table->string('descripcion',300);
             $table->boolean('disponibilidad')->default(true);
             $table->boolean('promocion_activa')->default(false);

@@ -18,8 +18,8 @@ return new class extends Migration
             $table->boolean('abierto');
             $table->unsignedBigInteger('horario_dia_id');
             $table->foreign('horario_dia_id')->references('id')->on('horarios_dias');
-            $table->string('codigo_operacion',11);
-            $table->foreign('codigo_operacion')->references('codigo_operacion')->on('restaurantes');
+            $table->unsignedBigInteger('restaurante_id');
+            $table->foreign('restaurante_id')->references('id')->on('restaurantes');
             $table->timestamps();
         });
     }

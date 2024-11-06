@@ -9,7 +9,7 @@ class ComidaRestaurante extends Model
 {
     use HasFactory;
 
-    protected $table  = "Comidas_Restaurante"; 
+    protected $table  = "comidas_restaurante"; 
 
     public function  categoria()
     {

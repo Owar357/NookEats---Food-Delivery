@@ -20,7 +20,7 @@ return new class extends Migration
             $table->time('hora_entrega');
             $table->string('foto_entrega',250);
             $table->unsignedBigInteger('usuario_id');
-            $table->foreign('usuario_id')->references('id')->on('usuarios');
+            $table->foreign('usuario_id')->references('id')->on('users');
             $table->timestamps();
         });
     }

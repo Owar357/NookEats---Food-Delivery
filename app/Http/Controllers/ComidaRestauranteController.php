@@ -70,6 +70,8 @@ class ComidaRestauranteController extends Controller
             $comida->precio = $request->precio;
             $comida->imagen = $request->imagen;
             $comida->categoria_id = $request->categoria_id;
+            
+
 
             if ($comida->save()) {
                 return response()->json(['status' => 'ok', 'data' => $comida], 201);
@@ -78,7 +80,7 @@ class ComidaRestauranteController extends Controller
             }
         } catch (\Throwable $th) {
         }
-        return response()->json(['status' => 'error', 'message' => 'A ocurrido  un error  interno'], 500);
+        return response()->json(['status' => 'error', 'message' => 'A ocurrido  un error  interno'. $th->getMessage()], 500);
     }
 
 
@@ -120,7 +122,7 @@ class ComidaRestauranteController extends Controller
             }
         } catch (\Throwable $th) {
         }
-        return response()->json(['status' => 'error', 'message' => 'A ocurrido  un error interno'], 500);
+        return response()->json(['status' => 'error', 'message' => 'A ocurrido  un error interno'. $th->getMessage()], 500);
     }
 
     

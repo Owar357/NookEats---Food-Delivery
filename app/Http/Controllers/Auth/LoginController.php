@@ -37,4 +37,13 @@ class LoginController extends Controller
         $this->middleware('guest')->except('logout');
         $this->middleware('auth')->only('logout');
     }
+    
+    public function authenticated($request, $user){
+        if($user->rol == 'R'){
+            return redirect()->route('admin-rest');    
+        }elseif ($user->rol == 'A') {
+            return redirect()->route('admin');
+        }
+        return redirect()->route('home');
+    }
 }

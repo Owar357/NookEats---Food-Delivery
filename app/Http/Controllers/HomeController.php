@@ -21,8 +21,22 @@ class HomeController extends Controller
      *
      * @return \Illuminate\Contracts\Support\Renderable
      */
+    //Devuelve la vista de Usuario simple
     public function index()
     {
         return view('home');
     }
+
+    //devuelve la vista de administrador
+    public function dash()
+    {
+        return view('admin.dash');
+    }
+
+    //devuelve la vista de restaurante
+    public function restDash()
+    {
+        return view('restadmin.restdash');
+    }
+
 }

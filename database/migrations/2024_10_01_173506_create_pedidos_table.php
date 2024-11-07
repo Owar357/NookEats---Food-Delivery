@@ -13,12 +13,10 @@ return new class extends Migration
     {
         Schema::create('pedidos', function (Blueprint $table) {
             $table->id();
-            $table->dateTime('fecha_hora_pedido');
+            $table->dateTime('fecha_hora_pedido')->nullable();
             $table->decimal('total',10,2);
-            $table->string('estado_pedido',1);
+            $table->string('estado_pedido',1)->default('P');
             $table->string('metodo_pago',2);
-            $table->time('hora_entrega');
-            $table->string('foto_entrega',250);
             $table->unsignedBigInteger('usuario_id');
             $table->foreign('usuario_id')->references('id')->on('users');
             $table->timestamps();

@@ -195,4 +195,23 @@ class ComidaRestauranteController extends Controller
 
         return $precioFinal;
     }
+
+
+    public function EliminarComida($id)
+    {
+       try {
+        
+        $comida = ComidaRestaurante::findOrFail($id);
+
+        if($comida ->delete()){
+            
+            return response()->json(['status' => 'ok', 'message' => 'Eliminado exitosamente'],200);
+        }else{
+            return response()->json(['status' => 'fail', 'message' => 'Fallo al eliminar'],500);
+        }
+
+       } catch (\Throwable $th) {
+        return response()->json(['status' => 'error', 'message' => 'Ocurrio un error'],500);
+       }
+    }
 }

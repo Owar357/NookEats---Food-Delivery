@@ -318,7 +318,7 @@ return [
         [
             'text' => 'blog',
             'url' => 'admin/blog',
-            'can' => 'manage-blog',
+            'can' => 'admin',
         ],
         [
             'text' => 'pages',
@@ -326,6 +326,7 @@ return [
             'icon' => 'far fa-fw fa-file',
             'label' => 4,
             'label_color' => 'success',
+            'can' => 'admin.rest',
         ],
         ['header' => 'account_settings'],
         [

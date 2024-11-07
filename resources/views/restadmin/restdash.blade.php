@@ -3,7 +3,7 @@
 @section('title', 'Marcas')
 
 @section('content_header')
-    <h1>Ruta de usuario</h1>
+    <h1>Ruta administrador de restaurante</h1>
 @stop
 
 @section('content')

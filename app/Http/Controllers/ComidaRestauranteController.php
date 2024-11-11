@@ -214,4 +214,8 @@ class ComidaRestauranteController extends Controller
         return response()->json(['status' => 'error', 'message' => 'Ocurrio un error'],500);
        }
     }
+
+    public function getViewComidas(){
+        return view('restadmin.comidas');
+    }
 }

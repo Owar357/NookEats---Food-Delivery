@@ -22,3 +22,4 @@ Route:: get('/restaurante/{id}/comidas', [ComidaRestauranteController::class, 'L
 Route:: post('/restaurante/comida/crear', [ComidaRestauranteController::class, 'AgregarComida' ]);
 Route:: put('/restaurante/comida/{id}/editar', [ComidaRestauranteController::class, 'EditarComida' ]);
 Route:: put('/restaurante/comida/{id}/promocion', [ComidaRestauranteController::class, 'ActivarDesactivarPromocion' ]);
+Route::get('/comidas', [ComidaRestauranteController::class, 'getViewComidas'])->name('comidas');

@@ -14,10 +14,8 @@ class Pedido extends Model
         return $this->hasMany(PedidoComida::class);
     } 
   
-
-    public function usuario()
+    public function user()
     {
-        return $this->belongsTo(Usuario::class);
+        return $this->belongsTo(User::class, 'usuario_id');
     }
-  
 }

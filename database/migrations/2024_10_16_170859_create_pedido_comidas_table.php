@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('pedido_comidas', function (Blueprint $table) {
             $table->id();
             $table->integer('cantidad');
-            $table->text('nota');
+            $table->text('nota')->nullable();
             $table->unsignedBigInteger('pedido_id');
             $table->foreign('pedido_id')->references('id')->on('pedidos');
             $table->unsignedBigInteger('comida_restaurante_id');

@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('numero_pedido',11);
             $table->dateTime('fecha_hora_pedido')->nullable();
-            $table->decimal('total',10,2);
+            $table->decimal('total',6,2);
             $table->string('estado_pedido',1)->default('P');
             $table->string('metodo_pago',2);
             $table->unsignedBigInteger('usuario_id');

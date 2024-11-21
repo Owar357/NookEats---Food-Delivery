@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Pedido;
 use App\Models\PedidoComida;
+use App\Models\Restaurante;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -32,20 +33,26 @@ class PedidoController extends Controller
   {
 
     try {
+      $request->validate([
+        'metodo_pago' => 'required|string|max:1',
+        'total' => 'required|numeric|min:0|max:9999.99',
+        'cantidad' => 'required|integer|min:1',
+        'nota' => 'nullable|string',
+        'comida_restaurante_id' => 'required|integer',
+    ]);
+
+
       DB::beginTransaction();
 
-      // Se crea el pedido
+      
       $pedido = new Pedido();
       $pedido->fecha_hora_pedido = now();
-      $numero_generado = $this->numerodePedido();
+      $pedido-> numero_generado = $this->numerodePedido();
       $pedido->metodo_pago = $request->metodo_pago;
-      // Para pruebas API
-      $pedido->usuario_id = $request->usuario_id;
+      
       // Activar cuando la ruta esté protegida con el middleware para esperar los resultados correspondientes
-      // $pedido->id_usuario = auth()->id();
+      $pedido->id_usuario = Auth::user()->id;
       $pedido->total = $request->total;
-      $pedido->estado_pedido = $request->estado_pedido;
-
       if ($pedido->save()) {
         foreach ($request->pedido_comida as $comida) {
           $pedido_comida = new PedidoComida();
@@ -69,7 +76,7 @@ class PedidoController extends Controller
       DB::rollBack();
       return response()->json([
         'status' => 'error',
-        'message' => 'Ha ocurrido un error al realizar el pedido. Por favor, intente nuevamente, si el problema persiste, repórtelo.' . $q->getMessage()
+        'message' => 'Ha ocurrido un error al realizar el pedido. Por favor, intente nuevamente, si el problema persiste, repórtelo.' 
       ], 500);
     }
   }
@@ -98,7 +105,7 @@ class PedidoController extends Controller
         // Cuando la autenticación esté implementada, se descomenta la siguiente línea
         // para usar el ID del usuario autenticado.
          
-        // !! Cuando la ruta esté protegida con middleware, descomentar la línea siguiente
+
         // $id = Auth::id(); // Obtiene el ID del usuario autenticado
         // Recupar todos los pedidos realizados por el usuario con el ID especificado
         // La consulta busca pedidos donde 'usuario_id' es igual al ID del usuario
@@ -106,22 +113,13 @@ class PedidoController extends Controller
   public function  VerHistorialCompras(Request $request)
   {
     try {
+ 
+      $pedidos = Auth::user()->pedidos;
 
-      $id = 1;
-
-      //Activar cuando se implemente la autentificacion
-      //$id = Auth::id();
-
-      //!!borrar cuando la ruta  este protegida con midleware en web .php
-      $compras =  Pedido::where('usuario_id', $id)->get();
-
-      //activar cuando la ruta este protegida con el midleware en web.php; 
-      //$pedidos = Auth::user()->pedidos;
-
-      return response()->json(['status' => 'ok', 'message' => 'Historial de pedidos', 'data' => $compras,], 200);
+      return response()->json(['status' => 'ok', 'message' => 'Historial de pedidos', 'data' => $pedidos,], 200);
     } catch (\Throwable $th) {
-
-      return response()->json(['status' => 'fail', 'message' => 'ocurrio un error'], 500);
+ 
+      return response()->json(['status' => 'fail', 'message' => 'ocurrio un error inesperado'], 500);
     }
   }
 
@@ -145,7 +143,7 @@ class PedidoController extends Controller
     try {
 
       //verifica que el pedido pertenece al usuario
-      $CancelarPedido = Pedido::where('id', $id)->where('usuario_id', Auth::id())->first();
+      $CancelarPedido = Pedido::where('id', $id)->where('usuario_id', Auth::user())->id->first();
 
       if (!$CancelarPedido) {
         return response()->json(['status' => 'fail', 'message' => 'Pedido no encontrado No autorizado para Cancelar el pedido'], 404);
@@ -159,4 +157,30 @@ class PedidoController extends Controller
       return response()->json(['status' => 'error', 'message' => 'ocurrio un error'], 500);
     }
   }
+
+
+   //**funcion que permitira ver al usuario ver el  perfil completo del restaurante seleccionado*/
+    //**cosas como foto de perfi, horarios, comidas con sus respectivo datos y categoria disponibles del restaurante ademas de su descripicion*/    
+    public function verPefilRestaurante($restaurante_id)
+    {
+    try {
+     $perfilVentas = Restaurante::with(['horarios','categorias.comidasRestaurante'])->where('id',$restaurante_id)->get();
+
+      return response()->json(['status' => 'ok', 'message' => 'informacion del perfil restaurante recuperada con exito', 'data' => $perfilVentas],200);
+     } catch (\Throwable $th) {
+       return response()->json(['status' => 'ok','message' => 'ocurrio un error inesperado'],500);
+    }
+    }
+
+  //**Lista de restaurante para la busqueda delos mismos */
+    public function listaRestaurantes()
+    {
+      try {
+        $listaRestaurantes = Restaurante::select('id', 'nombre','imagen','descripcion')->get();
+
+        return response()->json([ 'restaurantes' =>  $listaRestaurantes],200);
+      } catch (\Throwable $th) {
+        return response()->json(['status' => 'error', 'message' => 'Ocurrio un error inesperado', ],500);
+      }
+    }
 }

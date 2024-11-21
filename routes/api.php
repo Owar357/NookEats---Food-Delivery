@@ -10,14 +10,17 @@ Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
 
-Route::get('restaurante/{id}/comidas', [ComidaRestauranteController::class, 'ListarComidas' ]);
+Route::get('restaurante/comidas', [ComidaRestauranteController::class, 'ListarComidas' ]);
 Route:: post('restaurante/comida/crear', [ComidaRestauranteController::class, 'AgregarComida' ]);
 Route:: put('restaurante/comida/{id}/editar', [ComidaRestauranteController::class, 'EditarComida' ]);
 Route:: put('restaurante/comida/{id}/promocion', [ComidaRestauranteController::class, 'ActivarDesactivarPromocion' ]);
+Route:: get('restaunrante/{id}/compras',[ComidaRestauranteController::class, 'verPefilRestaurante']);
+
+
 
 //ruta del pedidoController:
 Route::post('usuario/Pedido/Crear',[PedidoController::class,'RealizarPedido']); //*
-Route::get('usuario/Pedidos/Ver',[PedidoController::class,'VerHistorialCompras']);//*
+Route::get('usuario/Pedidos/Ver',[PedidoController::class,'listaRestaurantes']);//*
 Route::put('usuario/Pedido/{id}/Cancelar',[PedidoController::class,'CancelarCompra']);
 
 

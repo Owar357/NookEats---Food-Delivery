@@ -15,10 +15,9 @@ return new class extends Migration
             $table->id();
             $table->time('hora_apertura');
             $table->time('hora_cierre');
-            $table->boolean('abierto');
+            $table->string('horario_dia',35);
+            $table->boolean('abierto')->default(true);
             $table->unsignedBigInteger('horario_dia_id');
-            $table->foreign('horario_dia_id')->references('id')->on('horarios_dias');
-            $table->unsignedBigInteger('restaurante_id');
             $table->foreign('restaurante_id')->references('id')->on('restaurantes');
             $table->timestamps();
         });

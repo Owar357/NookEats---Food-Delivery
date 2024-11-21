@@ -13,10 +13,10 @@ return new class extends Migration
     {
         Schema::create('categorias', function (Blueprint $table) {
             $table->id();
-            $table->string('nombre',50)->unique();
-            $table->timestamps();
+            $table->string('nombre',50);
             $table->unsignedBigInteger('restaurante_id');
             $table->foreign('restaurante_id')->references('id')->on('restaurantes');
+            $table->timestamps();
         });
     }
 

@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Categoria;
+use App\Models\ComidaRestaurante;
 use App\Models\Pedido;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Throwable;
 
 class VentasController extends Controller
@@ -20,23 +23,28 @@ class VentasController extends Controller
    * @throws Throwable Si ocurre un error al recuperar los pedidos.
    */
 
-    public function  VerPedidosRestaurante($restauranteId)
-    {
-      try {
-        $pedidos = Pedido::with(['user:id,name','pedidoComidas.comidaRestaurante'])->where('estado_pedido', 'P')->  //primero busca los pedidos que esten pendientes Y traemos la info del usaurio
+  public function  VerPedidosRestaurante()
+  {
+    try {
+
+      $sessionUsuario = Auth::user();
+
+      $restauranteId = $sessionUsuario->restaurante->id;
+
+      $pedidos = Pedido::with(['user:id,name', 'pedidoComidas.comidaRestaurante'])->where('estado_pedido', 'P')->  //primero busca los pedidos que esten pendientes Y traemos la info del usaurio
         whereHas('pedidoComidas.comidaRestaurante.categoria.restaurante', function ($query) use ($restauranteId) {
           $query->where('id', $restauranteId); //filtramos hasta verificar que el id del restaunte coincida de la comidas  coincida  con el existente
-        })-> get();
+        })->get();
 
-      return response()->json(['status' => 'ok', 'message' => 'Se han cargado correctamente los datos', 'data' => $pedidos ], 200);
+      return response()->json(['status' => 'ok', 'message' => 'Se han cargado correctamente los datos', 'data' => $pedidos], 200);
     } catch (\Throwable $th) {
 
-      return response()->json(['status' => 'fail', 'message' => 'Ocurrio un error inesperado'. $th->getMessage()], 500);
+      return response()->json(['status' => 'fail', 'message' => 'Ocurrio un error inesperado' . $th->getMessage()], 500);
     }
   }
 
 
-/**
+  /**
    * Permite cambiar los estados del pedido.
    *
    * Este metodo permite al restaurante cambiar los estados del pedido segun  las etapas del mismo, 
@@ -65,7 +73,7 @@ class VentasController extends Controller
         $pedido->estado_pedido = 'E'; //En camino 
       } else if ($pedido->estado_pedido == 'E') {
         $pedido->estado_pedido = 'F'; //Finalizado
-      } else if($pedido->estado_pedido == 'F' || $pedido->estado_pedido == 'C'  ) {
+      } else if ($pedido->estado_pedido == 'F' || $pedido->estado_pedido == 'C') {
         return response()->json([
           'status' => 'error',
           'message' => 'No se puede modificar el estado, el pedido  ya esta Finalizado o Cancelado '
@@ -79,4 +87,48 @@ class VentasController extends Controller
       return response()->json(['status' => 'error', 'message' => 'A ocurrido un error inesperado '], 500);
     }
   }
+
+
+  public function verHistorialVentas()
+  {
+    try {
+      // Verifica que el usuario esté autenticado
+      if (!Auth::check()) {
+        return response()->json([
+          'status' => 'error',
+          'message' => 'Usuario no autenticado',
+        ], 401);
+      }
+ 
+
+         //accede a la relaciones mediante la sesión activa 
+         $usuario = Auth::user();
+         $restauranteId = $usuario->restaurante->id;
+
+
+        // Consulta los pedidos finalizados
+        $pedidos = Pedido::with(['pedidoComidas.comidaRestaurante'])
+            ->where('estado_pedido', 'F')
+            ->whereHas('pedidoComidas.comidaRestaurante.categoria.restaurante', function ($query) use ($restauranteId) {
+                $query->where('id', $restauranteId);
+            })
+            ->get();
+
+      return response()->json([
+        'status' => 'ok',
+        'message' => 'Pedidos cargados Finalidos exitosamente',
+        'data' => $pedidos,
+      ], 200);
+    } catch (\Throwable $th) {
+      // Manejo de errores
+      return response()->json([
+        'status' => 'error',
+        'message' => 'Error al cargar los pedidos',
+        'error' => $th->getMessage(),
+      ], 500);
+    }
+  }
+
+
+ 
 }

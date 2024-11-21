@@ -9,11 +9,6 @@ class Horario extends Model
 {
     use HasFactory;
 
-    public function  horarioDia()
-    {
-        return $this -> belongsTo(HorarioDia::class);
-    }
-
     public function  restaurante()
     {
         return $this -> belongsTo(Restaurante::class);

@@ -16,7 +16,8 @@ return new class extends Migration
             $table->decimal('precio',10,2);
             $table->decimal('precioDescuento',10,2)->default(0.00);
             $table->string('nombre',125);
-            $table->string('imagen',300);
+            $table->string('imagen_original',300)->nullable();
+            $table->string('imagen_hash',150)->nullable();
             $table->string('descripcion',300);
             $table->boolean('disponibilidad')->default(true);
             $table->boolean('promocion_activa')->default(false);

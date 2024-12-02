@@ -17,7 +17,7 @@ return new class extends Migration
             $table->time('hora_cierre');
             $table->string('horario_dia',35);
             $table->boolean('abierto')->default(true);
-            $table->unsignedBigInteger('horario_dia_id');
+            $table->unsignedBigInteger('restaurante_id');
             $table->foreign('restaurante_id')->references('id')->on('restaurantes');
             $table->timestamps();
         });

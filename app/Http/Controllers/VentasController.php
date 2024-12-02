@@ -2,10 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Categoria;
-use App\Models\ComidaRestaurante;
 use App\Models\Pedido;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Throwable;
 
@@ -23,14 +20,13 @@ class VentasController extends Controller
    * @throws Throwable Si ocurre un error al recuperar los pedidos.
    */
 
-  public function  VerPedidosRestaurante()
+  public function  verPedidosRestaurante()
   {
     try {
 
       $sessionUsuario = Auth::user();
 
       $restauranteId = $sessionUsuario->restaurante->id;
-
       $pedidos = Pedido::with(['user:id,name', 'pedidoComidas.comidaRestaurante'])->where('estado_pedido', 'P')->  //primero busca los pedidos que esten pendientes Y traemos la info del usaurio
         whereHas('pedidoComidas.comidaRestaurante.categoria.restaurante', function ($query) use ($restauranteId) {
           $query->where('id', $restauranteId); //filtramos hasta verificar que el id del restaunte coincida de la comidas  coincida  con el existente
@@ -63,30 +59,30 @@ class VentasController extends Controller
    * @throws Exception Se activara solo si ocurre un error durante la alteracion de los firentes estados.
    */
 
-  public function ModificarEstadoPedido($id)
-  {
-    try {
+    public function modificarEstadoPedido($id)
+    {
+      try {
 
-      $pedido = Pedido::findorFail($id);
+        $pedido = Pedido::findorFail($id);
 
-      if ($pedido->estado_pedido == 'P') {
-        $pedido->estado_pedido = 'E'; //En camino 
-      } else if ($pedido->estado_pedido == 'E') {
-        $pedido->estado_pedido = 'F'; //Finalizado
-      } else if ($pedido->estado_pedido == 'F' || $pedido->estado_pedido == 'C') {
-        return response()->json([
-          'status' => 'error',
-          'message' => 'No se puede modificar el estado, el pedido  ya esta Finalizado o Cancelado '
-        ], 400);
+        if ($pedido->estado_pedido == 'P') {
+          $pedido->estado_pedido = 'E'; //En camino 
+        } else if ($pedido->estado_pedido == 'E') {
+          $pedido->estado_pedido = 'F'; //Finalizado
+        } else if ($pedido->estado_pedido == 'F' || $pedido->estado_pedido == 'C') {
+          return response()->json([
+            'status' => 'error',
+            'message' => 'No se puede modificar el estado, el pedido  ya esta Finalizado o Cancelado '
+          ], 400);
+        }
+        $pedido->save();
+
+        return response()->json(['status' => 'ok', 'message' => 'Se ha modificado el estado del pedido'], 200);
+      } catch (\Throwable $th) {
+
+        return response()->json(['status' => 'error', 'message' => 'A ocurrido un error inesperado '], 500);
       }
-      $pedido->save();
-
-      return response()->json(['status' => 'ok', 'message' => 'Se ha modificado el estado del pedido'], 200);
-    } catch (\Throwable $th) {
-
-      return response()->json(['status' => 'error', 'message' => 'A ocurrido un error inesperado '], 500);
     }
-  }
 
 
   public function verHistorialVentas()

@@ -1,4 +1,4 @@
-@extends('adminlte::page')
+ @extends('adminlte::page')
 
 @section('title', 'Marcas')
 
@@ -7,7 +7,9 @@
 @stop
 
 @section('content')
-
+ <div id="app">
+    <formulario-component> </formulario-component>
+ </div>
 @stop
 
 

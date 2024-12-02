@@ -6,11 +6,11 @@
     <h1>Ruta de usuario</h1>
 @stop
 
-@section('content')
-
-@stop
-
 
 @section('js')
     @vite('resources/js/app.js')
 @stop
+
+
+
+

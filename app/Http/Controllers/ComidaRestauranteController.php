@@ -4,11 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Models\Categoria;
 use App\Models\ComidaRestaurante;
-use App\Models\Restaurante;
+use Exception;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
+use phpDocumentor\Reflection\Types\Nullable;
+use Throwable;
 
 class ComidaRestauranteController extends Controller
 {
@@ -26,21 +28,34 @@ class ComidaRestauranteController extends Controller
      * 
      * 
      */
-    public function ListarComidas()
+    public function listarComidas()
     {
-
         $sesionUsuario = Auth::user();
-
         $restauranteId = $sesionUsuario->restaurante->id;
-
         try {
-            $comidas = Categoria::with(['comidasRestaurante'])->where('restaurante_id', $restauranteId)->get();
+            $comidas = Categoria::with(['comidasRestaurante'])
+                ->where('restaurante_id', $restauranteId)
+                ->get();
 
-            if ($comidas->isEmpty()) {
-                return response()->json(["message" => "El restaurante no existe o no tiene comidas registradas"], 404);
-            }
 
-            return response()->json(["status" => "ok", "data" => $comidas], 200);
+            $resultado = $comidas->map(function ($comidas) {
+                return [
+                    'categoria' => $comidas->nombre,
+                    'comidas' => $comidas->comidasRestaurante->map(function ($comidas) {
+                        return [
+                            'nombre' => $comidas->nombre,
+                            'descripcion' => $comidas->descripcion,
+                            'precio' => number_format($comidas->precio,2),
+                            'precioDescuento' => $comidas->precioDescuento,
+                            'imagen_original' => $comidas->imagen_original,
+                            'imagen_hash' => $comidas->imagen_hash
+                                ? asset('storage/img/comida/' . $comidas->imagen_hash)
+                                : asset('images/default_comida.png')
+                        ];
+                    }),
+                ];
+            });
+            return response()->json(["data" => $resultado], 200);
         } catch (\Throwable $th) {
             return response()->json(["status" => "error", "message" => "Ocurrio un error en el servidor: "], 500);
         }
@@ -63,47 +78,47 @@ class ComidaRestauranteController extends Controller
      * 
      * 
      */
-    public function AgregarComida(Request $request)
+    public function agregarComida(Request $request)
     {
         try {
+            //*Activar solo si los datos del form-data vienen como  un formulario convecional*/
+            //**Si el form-data si la clave se envia tipo json() no reconoces campos */
             $request->validate([
-                'nombre' => 'required|string|max:125',
-                'descripcion' => 'required|string|max:300',
-                'precio' => 'required|decimal:5,2',
-                'categoria_id' => 'required|integer',
-                'imagen' => 'required|image|mimes:jpg,jpeg,png|max:2048 '
+            //'nombre' => 'required|string|max:125',
+            //'descripcion' => 'required|string|max:300',
+            //'precio' => 'required|numeric|between 0,9999.99',
+            //'categoria_id' => 'required|integer',
+            'imagen' => 'nullable|image|mimes:jpg,png,webp|max:2048'
             ]);
+
             $comida  = new ComidaRestaurante();
 
-            $comida->nombre = $request->input('nombre');
-            $comida->descripcion = $request->input('descripcion');
-            $comida->precio = $request->input('precio');
-            $comida->categoria_id = $request->input('categoria_id');
+            $data = json_decode($request->input('data'), true);
+
+            $comida->nombre = $data['nombre'];
+            $comida->descripcion = $data['descripcion'];
+            $comida->precio = $data['precio'];
+            $comida->categoria_id = $data['categoria_id'];
 
             if ($request->hasFile('imagen')) {
 
                 $nombreOriginal = $request->file('imagen')->getClientOriginalName();
-                $extension  =  $request->file('imagen')->getClientOriginalExtension();
-                $timestamp = now()->format('Ymd_His');
-                $nuevoNombre = 'img_' . pathinfo($nombreOriginal, PATHINFO_FILENAME) . '_' . $timestamp . '.' . $extension;
-                $img = $request->file('imagen')->storeAs('public/img', $nuevoNombre);
-                $comida->imagen = $nuevoNombre;
+                $nombreHash = $request->file('imagen')->hashName();
+                $request->file('imagen')->storeAs('img/comida', $nombreHash);
+                $comida->imagen_original = $nombreOriginal;
+                $comida->imagen_hash =  $nombreHash;
             } else {
                 return response()->json(['status' => 'error', 'message' => 'error al guardar la imagen'], 500);
             }
-
             if ($comida->save()) {
                 return response()->json(['status' => 'ok', 'message' => 'comida creada con exito', 'data' => $comida], 201);
             } else {
                 return response()->json(['status' => 'fail', 'message' => 'A ocurrido  un error al intentar crear la comida'], 500);
             }
         } catch (\Throwable $th) {
-            return response()->json(['status' => 'error', 'message' => 'A ocurrido  un error  interno'], 500);
+            return response()->json(['status' => 'error', 'message' => 'A ocurrido  un error  interno' . $th->getMessage()], 500);
         }
     }
-
-
-
 
     /**
      * Permite al restaurante editar una comida existente  
@@ -120,37 +135,48 @@ class ComidaRestauranteController extends Controller
      * 
      */
 
-    public function  EditarComida(Request $request, $id)
+    public function  editarComida(Request $request, $id)
     {
 
         try {
-            $request->validate([
-                'nombre' => 'required|string|max:125',
-                'descripcion' => 'required|string|max:300',
-                'precio' => 'required|decimal:5,2',
-                'categoria_id' => 'required|integer',
-                'disponibilidad' => 'required|boolean| ',
-                'imagen' => 'required|image|mimes:jpg,jpeg,png|max:2048 '
-            ]);
+             $request->validate([
+            //     'nombre' => 'required|string|max:125',
+            //     'descripcion' => 'required|string|max:300',
+            //     'precio' => 'required|numeric|between 0,9999.99',
+            //     'categoria_id' => 'required|integer',
+            //     'disponibilidad' => 'required|boolean| ',
+               'imagen' =>  'nullable|image|mimes:jpg,jpeg,png,webp|max:2048'
+             ]);
 
 
             $comida  =  ComidaRestaurante::findOrFail($id);
+            $data = json_decode($request->input('data'), true);
 
-            $comida->nombre = $request->nombre;
-            $comida->descripcion = $request->descripcion;
-            $comida->precio = $request->precio;
-            $comida->imagen = $request->imagen;
-            $comida->disponibilidad = $request->disponibilidad;
-            $comida->categoria_id = $request->categoria_id;
+            $comida->nombre = $data['nombre'];
+            $comida->descripcion = $data['descripcion'];
+            $comida->precio = $data['precio'];
+            $comida->disponibilidad = $data['disponibilidad'];
+            $comida->categoria_id = $data['categoria_id'];
+            
+            if ($request->hasFile('imagen')) {
 
+                if ($comida->imagen_hash) {
+                    Storage::disk('public')->delete('img/comida/' . $comida->imagen_hash);
+                }
+                $nombreOriginal = $request->file('imagen')->getClientOriginalName();
+                $nombreHash = $request->file('imagen')->hashName();
+                $request->file('imagen')->storeAs('img/comida', $nombreHash);
+                $comida->imagen_original = $nombreOriginal;
+                $comida->imagen_hash = $nombreHash;
+            }
             if ($comida->save()) {
-                return response()->json(['status' => 'ok', 'data' => $comida, 'message ' => 'comida Atualizada '], 200);
+                return response()->json(['status' => 'ok', 'data' => $comida, 'message' => 'comida Actualizada correctamente '], 200);
             } else {
-                return response()->json(['status' => 'fail', 'message' => 'A ocurrido  un error'], 500);
+                return response()->json(['status' => 'fail', 'message' => 'Ha ocurrido  un error al actualizar la comida'], 500);
             }
         } catch (\Throwable $th) {
+            return response()->json(['status' => 'error', 'message' => 'Ocurrio  un error interno'], 500);
         }
-        return response()->json(['status' => 'error', 'message' => 'A ocurrido  un error interno' . $th->getMessage()], 500);
     }
 
 
@@ -171,13 +197,11 @@ class ComidaRestauranteController extends Controller
      * @throws \Throwable       Si ocurre un error al buscar o guardar la comida,
      *                          se lanza una excepción.
      */
-    public function ActivarDesactivarPromocion(Request $request, $id)
+
+    //!Arreglar logica de la funcion
+    public function activarDesactivarPromocion(Request $request, $id)
     {
         try {
-
-
-
-
             $comida = ComidaRestaurante::findOrFail($id);
 
             if ($request->promocion_activa ===  true) {
@@ -228,7 +252,7 @@ class ComidaRestauranteController extends Controller
     }
 
 
-    public function EliminarComida($id)
+    public function eliminarComida($id)
     {
         try {
 
@@ -252,16 +276,16 @@ class ComidaRestauranteController extends Controller
 
 
 
-   //------------------------Sección de Categorias----------------------
+    //**------------------------Sección de Categorias----------------------
 
     //!PROBAR APIpostman
-    public function CrearCategoria(Request $request)
+    public function crearCategoria(Request $request)
     {
         try {
             $request->validate([
                 'nombre' => 'required|string|max:50',
-             ]);
-        
+            ]);
+
             $categoria = new Categoria();
 
             if (!Auth::check()) {
@@ -291,7 +315,7 @@ class ComidaRestauranteController extends Controller
         }
     }
 
-    public function ListarCategorias()
+    public function listarCategorias()
     {
         try {
             if (!Auth::check()) {
@@ -315,10 +339,9 @@ class ComidaRestauranteController extends Controller
 
 
     //!ProbarApiPostman
-    public function EliminarCategoria($categoriaId)
+    public function eliminarCategoria($categoriaId)
     {
         try {
-
             if (!Auth::check()) {
                 return response()->json([
                     'status' => 'error',
@@ -327,7 +350,7 @@ class ComidaRestauranteController extends Controller
             }
 
             $sesionusuario = Auth::user();
-            $restauranteId =  '';
+            $restauranteId = $sesionusuario->restaurante->id;
 
             //Agregar si delete on cascade para que al eliminar la categoria se valla con su atributos
             $categoria = Categoria::where('id', $categoriaId)
@@ -340,7 +363,6 @@ class ComidaRestauranteController extends Controller
                 ], 404);
             }
 
-
             $categoria->delete();
             return response()->json([
                 'status' => 'ok',
@@ -351,12 +373,16 @@ class ComidaRestauranteController extends Controller
             return response()->json(['status' => 'error', 'message' => 'Ocurrio un error inesperado'], 500);
         }
     }
-
-
     //!Probar ApiPostMan
-    public function EditarCategoria(Request $request, $categoriaId)
+    public function editarCategoria(Request $request, $categoriaId)
     {
+
         try {
+
+            $request->validate([
+                'nombre' => 'required|string|max:50',
+            ]);
+
 
             $categoria = Categoria::findOrFail($categoriaId);
 

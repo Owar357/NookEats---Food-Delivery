@@ -63,12 +63,12 @@ return [
     |
     */
 
-    'logo' => '<b>Menu</b>Administrador',
-    'logo_img' => 'vendor/adminlte/dist/img/AdminLTELogo.png',
+    'logo' => '<b>Menu</b>',
+    'logo_img' => 'vendor/adminlte/dist/img/home.png',
     'logo_img_class' => 'brand-image img-circle elevation-3',
     'logo_img_xl' => null,
     'logo_img_xl_class' => 'brand-image-xs',
-    'logo_img_alt' => 'Admin Logo',
+    'logo_img_alt' => 'A',
 
     /*
     |--------------------------------------------------------------------------
@@ -110,7 +110,7 @@ return [
     */
 
     'preloader' => [
-        'enabled' => true,
+        'enabled' => false,
         'mode' => 'fullscreen',
         'img' => [
             'path' => 'vendor/adminlte/dist/img/AdminLTELogo.png',
@@ -338,40 +338,23 @@ return [
             'route' => 'formularioR',
             'icon' => 'mdi mdi-store-plus',
         ],
+
+        //Seccion para mostrar las rutas del admin restaurante
         [
-            'text' => '',
-            'icon' => 'fas fa-fw fa-share',
+            'text' => 'Comida',
+            'icon' => 'mdi mdi-food',
+             'can' => 'admin.rest', 
             'submenu' => [
                 [
-                    'text' => 'level_one',
-                    'url' => '#',
+                    
+                    'text' => 'Añadir Comida',
+                    'route' => 'añadirComida',
+                    'icon' => 'mdi mdi-hamburger-plus',
                 ],
+        
                 [
-                    'text' => 'level_one',
-                    'url' => '#',
-                    'submenu' => [
-                        [
-                            'text' => 'level_two',
-                            'url' => '#',
-                        ],
-                        [
-                            'text' => 'level_two',
-                            'url' => '#',
-                            'submenu' => [
-                                [
-                                    'text' => 'level_three',
-                                    'url' => '#',
-                                ],
-                                [
-                                    'text' => 'level_three',
-                                    'url' => '#',
-                                ],
-                            ],
-                        ],
-                    ],
-                ],
-                [
-                    'text' => 'level_one',
+                    'text' => 'Editar comida',
+                    'icon' => 'mdi mdi-silverware-fork-knife',
                     'url' => '#',
                 ],
             ],

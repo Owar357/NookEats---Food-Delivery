@@ -12,7 +12,9 @@ Route::get('/user', function (Request $request) {
 
 Route::get('restaurante/comidas', [ComidaRestauranteController::class, 'ListarComidas' ]);
 Route:: post('restaurante/comida/crear', [ComidaRestauranteController::class, 'AgregarComida' ]);
-Route:: put('restaurante/comida/{id}/editar', [ComidaRestauranteController::class, 'EditarComida' ]);
+
+Route::post('restaurante/comida/{id}/editar', [ComidaRestauranteController::class, 'editarComida' ]);
+
 Route:: put('restaurante/comida/{id}/promocion', [ComidaRestauranteController::class, 'ActivarDesactivarPromocion' ]);
 Route:: get('restaunrante/{id}/compras',[ComidaRestauranteController::class, 'verPefilRestaurante']);
 

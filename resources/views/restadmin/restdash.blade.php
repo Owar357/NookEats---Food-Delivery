@@ -7,12 +7,11 @@
 @stop
 
 @section('content')
- <div id="app">
-    <formulario-component> </formulario-component>
- </div>
+    <div id="app">
+        <editar-comidas-component></editar-comidas-component>
+    </div> {{-- Contenedor para Vue --}}
 @stop
 
-
 @section('js')
-    @vite('resources/js/app.js')
+@vite('resources/js/app.js')
 @stop

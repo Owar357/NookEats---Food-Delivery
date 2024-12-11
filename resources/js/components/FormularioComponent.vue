@@ -91,7 +91,7 @@
             </v-radio-group>
 
             <v-container fluid>
-              <v-textarea v-model="formData.descripcion" :rules="rules.descripcion" label="Descripcion" counter
+              <v-textarea v-model="formData.descripcion" :rules="rules.descripcion" label="Descripcion" :counter-value="`${formData.descripcion.length}/300`"
                 prepend-inner-icon="mdi-text"></v-textarea>
             </v-container>
 
@@ -179,6 +179,7 @@ export default {
       }
 
       const formData = new FormData();
+      
       const jsonData = {
         nombre: this.formData.nombre,
         ubicacion: this.formData.ubicacion,
@@ -245,6 +246,7 @@ export default {
 
     },
   },
+
   mounted() {
     this.listarTipoNegocio();
   }

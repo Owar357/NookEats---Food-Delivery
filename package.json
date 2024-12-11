@@ -16,7 +16,11 @@
         "vue": "^3.2.37"
     },
     "dependencies": {
+        "2": "^3.0.0",
         "@mdi/font": "^7.4.47",
+        "jquery": "^3.7.1",
+        "select": "^1.1.2",
+        "select2": "^4.1.0-rc.0",
         "sweetalert2": "^11.14.5",
         "vite-plugin-vuetify": "^2.0.4",
         "vue-axios": "^3.5.2",

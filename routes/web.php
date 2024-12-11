@@ -6,6 +6,7 @@ use App\Http\Controllers\PedidoController;
 use App\Http\Controllers\RestaurantePerfilController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\VentasController;
+use App\Models\ComidaRestaurante;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -28,16 +29,26 @@ Route::get('/dashboard', [HomeController::class, 'restDash'])->middleware('auth.
 
 
 Route::middleware('auth.rest')->group(function(){
-   Route::get('/restaurante/admin/comidas', [ComidaRestauranteController::class, 'listarComidas' ]);
-   Route::post('/restaurante/admin/comida/crear', [ComidaRestauranteController::class, 'agregarComida' ]);
-   Route::put('/restaurante/admin/comida/{id}/editar', [ComidaRestauranteController::class, 'editarComida' ]); 
+   Route::get('/restaurante/comidas', [ComidaRestauranteController::class, 'listarComidas' ]);
+   
+   
+   
+   Route::post('/restaurante/comida/crear', [ComidaRestauranteController::class, 'agregarComida' ]);//***/
+
+   Route::post('/restaurante/comida/{id}/editar', [ComidaRestauranteController::class, 'editarComida' ]); //***/
+   Route::put('restaurante/comida/{id}/estado',[ComidaRestauranteController::class, 'estadoComida']); //*/
+
    Route::put('/restaurante/admin/comida/{id}/promocion', [ComidaRestauranteController::class, 'activarDesactivarPromocion' ]);
-   Route::delete('/restaurante/admin/comida/{id}/eliminar', [ComidaRestauranteController::class, 'eliminarComida' ]); 
-   Route::post('/restaurante/admin/categorias/crear', [ComidaRestauranteController::class, 'crearCategoria' ]); 
-   Route::get('/restaurante/admin/categorias/listar',[ComidaRestauranteController::class, 'listarCategorias']);
-   Route::delete('/restaurante/admin/categoria/{id}/eliminar',[ComidaRestauranteController::class,'eliminarCategoria']);
+   Route::post('/restaurante/categorias/crear', [ComidaRestauranteController::class, 'crearCategoria' ]);//***/
+   Route::get('/restaurante/categorias/listar',[ComidaRestauranteController::class, 'listarCategorias']); //***/
    Route::put('/restaurante/admin/categoria/{id}/editar',[ComidaRestauranteController::class,'editarCategoria']); 
-   Route::get('/comidas', [ComidaRestauranteController::class, 'getViewComidas'])->name('comidas');
+   
+   
+   
+//vistas
+Route::get('/comidas', [ComidaRestauranteController::class, 'getViewComidas']);
+Route::get('/añadir/comida', [ComidaRestauranteController::class, 'viewAñadirComida'])->name('añadirComida');
+
 });
 
 
@@ -54,7 +65,7 @@ Route::get('restaurante/config/horario',[RestaurantePerfilController::class,'lis
 Route::post('restaurante/config/horario',[RestaurantePerfilController::class,'agregarHorario']);
 Route::put('restaurante/config/horario/{id}',[RestaurantePerfilController::class,'editarHorario']);
 Route::delete('restaurante/config/horario/{id}',[RestaurantePerfilController::class,'eliminarHorario']);
-Route::get('/seleccionar/negocio',[RestaurantePerfilController::class,'listarTipoNegocio']);
+Route::get('/seleccionar/negocio',[RestaurantePerfilController::class,'listarTipoNegocio']);//***/
 //ver configs nos hacen falta.
 });
 
@@ -74,8 +85,8 @@ Route::get('/seleccionar/negocio',[RestaurantePerfilController::class,'listarTip
     //ruta de las vistas
         });
 
-Route::get('/usuario/formulario',[RestaurantePerfilController::class,'viewFormulario'])->name('formularioR');
-Route::get('restaurantes/recientes',[PedidoController::class,'restaurantesRecientes'])->name('restaurantesRecientes');
+Route::get('/usuario/formulario',[RestaurantePerfilController::class,'viewFormulario'])->name('formularioR');//***/
+Route::get('restaurantes/recientes',[PedidoController::class,'restaurantesRecientes'])->name('restaurantesRecientes');//***/
 
 
 

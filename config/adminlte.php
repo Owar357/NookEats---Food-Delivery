@@ -133,8 +133,8 @@ return [
     |
     */
 
-    'usermenu_enabled' =>true,
-    'usermenu_header' => true,
+    'usermenu_enabled' =>false,
+    'usermenu_header' => false,
     'usermenu_header_class' => 'bg-primary',
     'usermenu_image' => false,
     'usermenu_desc' => false,
@@ -215,9 +215,9 @@ return [
 
     'sidebar_mini' => 'lg',
     'sidebar_collapse' => false,
-    'sidebar_collapse_auto_size' => false,
+    'sidebar_collapse_auto_size' => true,
     'sidebar_collapse_remember' => false,
-    'sidebar_collapse_remember_no_transition' => true,
+    'sidebar_collapse_remember_no_transition' => false,
     'sidebar_scrollbar_theme' => 'os-theme-light',
     'sidebar_scrollbar_auto_hide' => 'l',
     'sidebar_nav_accordion' => true,
@@ -302,7 +302,7 @@ return [
         [
             'type' => 'navbar-search',
             'text' => 'search',
-            'topnav_right' => true,
+            'topnav_right' =>false,
         ],
         [
             'type' => 'fullscreen-widget',
@@ -319,14 +319,6 @@ return [
             'url' => 'admin/blog',
             'can' => 'admin',
         ],
-        [
-            'text' => 'pages',
-            'url' => 'admin/pages',
-            'icon' => 'far fa-fw fa-file',
-            'label' => 4,
-            'label_color' => 'success',
-            'can' => 'admin.rest',
-        ],
         ['header' => 'account_settings'],
         [
             'text' => 'profile',
@@ -338,7 +330,6 @@ return [
             'route' => 'formularioR',
             'icon' => 'mdi mdi-store-plus',
         ],
-
         //Seccion para mostrar las rutas del admin restaurante
         [
             'text' => 'Comida',
@@ -348,32 +339,26 @@ return [
                 [
                     
                     'text' => 'Añadir Comida',
-                    'route' => 'añadirComida',
+                    'route' => 'comida.añadir',
                     'icon' => 'mdi mdi-hamburger-plus',
                 ],
         
                 [
                     'text' => 'Editar comida',
                     'icon' => 'mdi mdi-silverware-fork-knife',
-                    'url' => '#',
+                    'route' => 'comida.editarVista',
+                ],
+                [
+                    'text' => 'Añadir y Editar Promociones',
+                    'icon' => 'mdi mdi-tag-heart',
+                    'route' => 'comida.promociones',
+                ],
+                [
+                    'text' => 'Editar Categorias',
+                    'icon' => 'mdi mdi-list-box',
+                    'route' => 'comida.categorias',
                 ],
             ],
-        ],
-        ['header' => 'labels'],
-        [
-            'text' => 'important',
-            'icon_color' => 'red',
-            'url' => '#',
-        ],
-        [
-            'text' => 'warning',
-            'icon_color' => 'yellow',
-            'url' => '#',
-        ],
-        [
-            'text' => 'information',
-            'icon_color' => 'cyan',
-            'url' => '#',
         ],
     ],
 

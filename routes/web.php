@@ -27,35 +27,48 @@ Route::get('/admin-rest', [HomeController::class, 'restDash'])->name('admin-rest
 Route::get('/dashboard', [HomeController::class, 'restDash'])->middleware('auth.rest');
 
 
+    
+Route::middleware('auth.rest')->prefix('admin/rest/comida')->group(function () {
+    //** Listar comidas */
+    Route::get('/listar', [ComidaRestauranteController::class, 'listarComidas']);//****/
 
-Route::middleware('auth.rest')->group(function(){
-   Route::get('/restaurante/comidas', [ComidaRestauranteController::class, 'listarComidas' ]);
-   
-   
-   
-   Route::post('/restaurante/comida/crear', [ComidaRestauranteController::class, 'agregarComida' ]);//***/
+    // **Rutas para crear comida */
+    Route::get('/añadir', [ComidaRestauranteController::class, 'viewAñadirComida'])->name('comida.añadir');//****/
+    Route::post('/crear', [ComidaRestauranteController::class, 'agregarComida']);//****/
 
-   Route::post('/restaurante/comida/{id}/editar', [ComidaRestauranteController::class, 'editarComida' ]); //***/
-   Route::put('restaurante/comida/{id}/estado',[ComidaRestauranteController::class, 'estadoComida']); //*/
+    // **Rutas para editar comida
+    Route::get('/editar', [ComidaRestauranteController::class, 'ViewEditarComida'])->name('comida.editarVista');//****/
+    Route::post('/{id}/editar', [ComidaRestauranteController::class, 'editarComida']);//****/
+    Route::put('/{id}/estado', [ComidaRestauranteController::class, 'estadoComida']);//****/
 
-   Route::put('/restaurante/admin/comida/{id}/promocion', [ComidaRestauranteController::class, 'activarDesactivarPromocion' ]);
-   Route::post('/restaurante/categorias/crear', [ComidaRestauranteController::class, 'crearCategoria' ]);//***/
-   Route::get('/restaurante/categorias/listar',[ComidaRestauranteController::class, 'listarCategorias']); //***/
-   Route::put('/restaurante/admin/categoria/{id}/editar',[ComidaRestauranteController::class,'editarCategoria']); 
-   
-   
-   
-//vistas
-Route::get('/comidas', [ComidaRestauranteController::class, 'getViewComidas']);
-Route::get('/añadir/comida', [ComidaRestauranteController::class, 'viewAñadirComida'])->name('añadirComida');
+    // **Rutas para promociones */
+    Route::get('/promociones', [ComidaRestauranteController::class, 'ViewPromociones'])->name('comida.promociones');//****/
+    Route::put('/{id}/promocion/anadir', [ComidaRestauranteController::class, 'activarDatosPromocion']);//****/
+    Route::get('/promocion/listar', [ComidaRestauranteController::class, 'listarPromociones']);//****/
+    Route::put('/{id}/promocion/estado', [ComidaRestauranteController::class, 'cambiarEstadoPromocion']);//****/
 
+    //**Rutas para las categorias */
+
+    Route::get('/categorias/edit',[ComidaRestauranteController::class, 'viewCategorias'])->name('comida.categorias');
+    Route::post('/categorias/crear', [ComidaRestauranteController::class, 'crearCategoria']);//****/
+    Route::get('/categorias/listar', [ComidaRestauranteController::class, 'listarCategorias']);//****/
+    Route::put('/categoria/{id}/editar', [ComidaRestauranteController::class, 'editarCategoria']);
+
+
+
+    //**Rutas para pedidos */
+    Route::get('/pedidos/listar',[VentasController::class,'verPedidosRestaurante']);
+    Route::patch('/pedido/{id}/estado',[VentasController::class,'modificarEstadoPedido']);
+    Route::get('/ventas/historial',[VentasController::class,'verHistorialVentas']);
 });
 
 
+
+
 Route::middleware('auth.rest')->group(function(){
- Route::get('/restaurante/admin/ver/pedidos',[VentasController::class,'verPedidosRestaurante']);
- Route::patch('/restaurante/admin/pedido/{id}/cambiar-estado',[VentasController::class,'modificarEstadoPedido']);
- Route::get('/restaurante/admin/ver/historial-ventas',[VentasController::class,'verHistorialVentas']);
+ 
+
+
 });
 
 Route::middleware('auth.rest')->group(function(){

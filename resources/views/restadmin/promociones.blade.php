@@ -2,12 +2,10 @@
 
 @section('title', 'NookEats')
 
-
-
 @section('content')
-<div id="app">
-  <historial-compras-component></historial-compras-component>
-</div>
+    <div id="app">
+        <Promociones-component></Promociones-component>
+    </div> 
 @stop
 
 @section('js')

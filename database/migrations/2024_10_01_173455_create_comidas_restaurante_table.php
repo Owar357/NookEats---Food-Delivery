@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string('descripcion',300);
             $table->boolean('disponibilidad')->default(true);
             $table->boolean('promocion_activa')->default(false);
+            $table->date('fecha_prominicio')->nullable();
             $table->date('fecha_promfinal')->nullable();
             $table->decimal('descuento',5,2)->nullable();
             $table->unsignedBigInteger('categoria_id');

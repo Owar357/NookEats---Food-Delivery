@@ -32,41 +32,43 @@ class PedidoController extends Controller
   public function  realizarPedido(Request $request)
   {
     try {
-      $request->validate([
-        'metodo_pago' => 'required|string|max:1',
-        'total' => 'required|numeric|min:0|max:9999.99',
-        'cantidad' => 'required|integer|min:1',
-        'nota' => 'nullable|string',
-        'comida_restaurante_id' => 'required|integer',
-    ]);
+     
       DB::beginTransaction();
       $pedido = new Pedido();
       $pedido->fecha_hora_pedido = now();
       $pedido-> numero_generado = $this->numerodePedido();
       $pedido->metodo_pago = $request->metodo_pago;
       
-      // Activar cuando la ruta esté protegida con el middleware para esperar los resultados correspondientes
       $pedido->id_usuario = Auth::user()->id;
       $pedido->total = $request->total;
-      if ($pedido->save()) {
+
+      if (!$pedido->save()){
+         
+        throw new  \Exception('Ocurrio un error al guardar el pedido en la base de datos');
+         
+      } 
         foreach ($request->pedido_comida as $comida) {
-          $pedido_comida = new PedidoComida();
-          $pedido_comida->cantidad = $comida['cantidad'];
-          $pedido_comida->nota = $comida['nota'];
-          $pedido_comida->pedido_id = $pedido->id;
-          $pedido_comida->comida_restaurante_id = $comida['comida_restaurante_id'];
-          if (!$pedido_comida->save()) {
+          $pedidoComida = new PedidoComida();
+          $pedidoComida->cantidad = $comida['cantidad'];
+          $pedidoComida->nota = $comida['nota'];
+          $pedidoComida->pedido_id = $pedido->id;
+          $pedidoComida->nombre_comida = $comida['nombre'];
+          $pedidoComida -> precio = $comida['precio'];
+          $pedidoComida -> precio_descuento = $comida['precioDescuento'];
+          $pedidoComida -> promocion_activa = $comida['estadoPromocion'];
+
+          if (!$pedidoComida->save()) {
             DB::rollBack();
-            return response()->json(['status' => 'error', 'message' => 'Ocurrió un error al agregar los datos del pedido'], 500);
+            return response()->json(['status' => 'error', 'message' => 'Ocurrió un error al guardar un elemento del pedido'], 500);
           }
         }
 
         DB::commit();
         return response()->json(['status' => 'created', 'message' => 'El pedido se ha realizado con éxito'], 201);
-      } else {
-        DB::rollBack();
-        return response()->json(['status' => 'error', 'message' => 'No se pudo realizar el pedido'], 500);
-      }
+      
+      
+      
+    
     } catch (QueryException $q) {
       DB::rollBack();
       return response()->json([

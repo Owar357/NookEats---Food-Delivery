@@ -182,7 +182,7 @@ export default {
           }
 
 
-          const response = await this.axios.post('/restaurante/comida/crear', formData, {
+          const response = await this.axios.post('/admin/rest/comida/crear', formData, {
             headers: {
               'Content-Type': 'multipart/form-data',
               'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
@@ -253,7 +253,7 @@ export default {
 
       try {
 
-        const response = await this.axios.post('/restaurante/categorias/crear', jsonData)
+        const response = await this.axios.post('/admin/rest/comida/categorias/crear', jsonData)
 
         this.dialog = false;
 
@@ -313,7 +313,7 @@ export default {
     },
 
     async listarCategorias() {
-      const response = await this.axios.get('/restaurante/categorias/listar');
+      const response = await this.axios.get('/admin/rest/comida/categorias/listar');
       this.categorias = response.data.categorias;
       console.log(this.categorias)
     },

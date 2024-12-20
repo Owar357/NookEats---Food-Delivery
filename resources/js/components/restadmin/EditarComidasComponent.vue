@@ -57,6 +57,8 @@
                   <v-icon>{{ item.disponibilidad === 1 ? 'mdi-eye-off' : 'mdi-eye' }}</v-icon>
                 </v-btn>
               </template>
+
+              
               <span>
                 {{ item.disponibilidad === 1 ? 'Desactivar la disponibilidad de esta comida' : 'Activar la disponibilidad de esta comida' }}
               </span>
@@ -96,6 +98,7 @@
             </v-card-actions>
           </v-card>
         </v-dialog>
+        
       </template>
     </v-data-table>
   </v-card>
@@ -141,7 +144,7 @@ export default {
 
       item.disponibilidad = item.disponibilidad === 1 ? 0 : 1
       try {
-        const response = await this.axios.put(`restaurante/comida/${item.id}/estado`, {
+        const response = await this.axios.put(`/admin/rest/comida/${item.id}/estado`, {
           disponibilidad: item.disponibilidad
         })
 
@@ -158,10 +161,8 @@ export default {
     async ListarComida() {
 
       try {
-        const response = await this.axios.get('/restaurante/comidas');
+        const response = await this.axios.get('/admin/rest/comida/listar');
         this.comidas = response.data.data;
-        console.log(this.comidas)
-
         this.OrdenarComidas();
 
       } catch (error) {
@@ -238,13 +239,8 @@ export default {
           formData.append("imagenhash", imagenOriginal);
         }
 
-        for (let pair of formData.entries()) {
-          console.log(pair[0] + ': ' + pair[1]);
-        }
-
-
-        console.log(formData)
-        const response = await this.axios.post(`/restaurante/comida/${this.ComidaSeleccionada.id}/editar`, formData, {
+       
+        const response = await this.axios.post(`/admin/rest/comida/${this.ComidaSeleccionada.id}/editar`, formData, {
           headers: {
             'Content-Type': 'multipart/form-data',
             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
@@ -252,6 +248,7 @@ export default {
         });
 
 
+    
         Swal.fire({
           toast: true,
           background: 'black',
@@ -280,7 +277,7 @@ export default {
 
     },
     async listarcategorias() {
-      const response = await this.axios.get('/restaurante/categorias/listar');
+      const response = await this.axios.get('/admin/rest/comida/categorias/listar');
       this.categorias = response.data.categorias;
     }
   },

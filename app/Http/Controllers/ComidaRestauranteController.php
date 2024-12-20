@@ -8,9 +8,7 @@ use Exception;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
-use phpDocumentor\Reflection\Types\Nullable;
 use Throwable;
 
 class ComidaRestauranteController extends Controller
@@ -38,9 +36,7 @@ class ComidaRestauranteController extends Controller
                 ->where('restaurante_id', $restauranteId)
                 ->get();
 
-                
-
-
+        
             $resultado = $comidas->map(function ($comidas) {
                 return [
                     'categoria' => $comidas->nombre,
@@ -70,7 +66,48 @@ class ComidaRestauranteController extends Controller
         }
     }
 
-
+    
+    public function listarPromociones()
+    {
+        try {
+            $sesionUsuario = Auth::user();
+            $restauranteid = $sesionUsuario->restaurante->id;
+    
+            // Aquí estás obteniendo las comidas del restaurante correctamente
+            $comidas = Categoria::with(['comidasRestaurante'])
+            ->where('restaurante_id', $restauranteid)
+            ->get();
+            
+            $resultado = $comidas->map(function ($categoria) {
+                // Mapeamos cada comida dentro de la categoría
+                return [
+                    'categoria' => $categoria->nombre,
+                    'comidas' => $categoria->comidasRestaurante->map(function ($comida) {
+                        return [
+                            'id' => $comida -> id,
+                            'nombre' => $comida->nombre,
+                            'precioOriginal' => number_format($comida->precio, 2),
+                            'precioDescuento' => number_format($comida->precioDescuento, 2),
+                            'descuento' => number_format($comida->descuento, 2),
+                            'estadoPromocion' => $comida->promocion_activa, 
+                            'fechaInicio' => $comida->fecha_prominicio,
+                            'fechaFin' => $comida->fecha_promfinal, 
+                        ];
+                    })
+                ];
+            });
+    
+            // Devolvemos la respuesta con los datos estructurados
+            return response()->json(["comidas" => $resultado], 200);
+    
+        } catch (\Throwable $th) {
+            return response()->json([
+                "status" => "error",
+                "message" => "Ocurrió un error al obtener promociones: " . $th->getMessage()
+            ], 500);
+        }
+    }
+    
 
 
     /**
@@ -124,11 +161,7 @@ class ComidaRestauranteController extends Controller
         }
     }
 
-    public function viewAñadirComida()
-    {
-        return  view('restadmin.añadir-comida');
-    }
-
+    
 
     /**
      * Permite al restaurante editar una comida existente  
@@ -220,27 +253,16 @@ class ComidaRestauranteController extends Controller
      */
 
     //!Arreglar logica de la funcion
-    public function activarDesactivarPromocion(Request $request, $id)
+    public function activarDatosPromocion(Request $request, $id)
     {
         try {
             $comida = ComidaRestaurante::findOrFail($id);
 
-            if ($request->promocion_activa ===  true) {
-                $comida->promocion_activa  = true;
+           
+                $comida->promocion_activa  =  $request->estado;
                 $comida->descuento = $request->descuento;
-                $descuentoAplicado = $request->descuento;
-                $preciOriginal = $comida->precio;
-                $precioDesc =  $this->aplicarDescuento($descuentoAplicado, $preciOriginal);
-
-
-                $comida->precioDescuento = $precioDesc;
-            } else {
-                $comida->promocion_activa  = false;
-                $comida->fecha_promfinal = now();
-            }
-
-
-
+                $comida->precioDescuento  = $request->precioDescuento;
+                //$comida->fecha_prominicio = now();   
             if ($comida->save()) {
                 return response()->json(['status' => 'ok', 'message' => 'Se ha actualizado la promocion']);
             } else {
@@ -252,26 +274,30 @@ class ComidaRestauranteController extends Controller
     }
 
 
-    /**
-     * Calcula el precio final después de aplicar un descuento.
-     *
-     * Este método toma un porcentaje de descuento y un precio original,
-     * y calcula el precio final después de aplicar el descuento.
-     *
-     * @param float $descuento   El porcentaje de descuento a aplicar.
-     * @param float $precio      El precio original antes de aplicar el descuento.
-     * @return float             Devuelve el precio final después de aplicar el descuento.
-     */
-    public function aplicarDescuento($descuento, $precio)
-    {
-        $descuentoObtenido  =  $precio * ($descuento / 100);
+    public function cambiarEstadoPromocion(Request $request, $id){
+        try {
+            $comida = ComidaRestaurante::findOrFail($id);
 
 
-        $precioFinal = $precio - $descuentoObtenido;
+            $comida -> promocion_activa = $request -> estado;
 
-        return $precioFinal;
+
+            if ($comida->save()) {
+                return response()->json(['message' => 'Se ha actualizado el estado la promocion']);
+            } else {
+                return response()->json(['message' => 'No se pudo actualizar el estado de la promoción'], 500);
+            }
+
+        } catch (\Throwable $th) {
+            
+            return response()->json(['status' => 'fail', 'message' => 'Ocurrio un error interno'], 500);
+        }
+
     }
 
+
+
+    //**------------------------Sección de Vistas----------------------
 
     public function getViewComidas()
     {
@@ -279,10 +305,30 @@ class ComidaRestauranteController extends Controller
     }
 
 
+    public function viewAñadirComida()
+    {
+        return  view('restadmin.añadir-comida');
+    }
+
+
+    public function ViewEditarComida(){
+     
+        return view('restadmin.editar-comidas');
+    }
+    
+
+    public function ViewPromociones(){
+     
+        return view('restadmin.promociones');
+    }
+
+    public function viewCategorias(){
+        return view('restadmin.editar-categorias');
+    }
+
 
     //**------------------------Sección de Categorias----------------------
 
-    //!PROBAR APIpostman
     public function crearCategoria(Request $request)
     {
         try {
@@ -334,17 +380,12 @@ class ComidaRestauranteController extends Controller
 
   
     //!Probar ApiPostMan
-    public function editarCategoria(Request $request, $categoriaId)
+    public function editarCategoria(Request $request, $id)
     {
 
         try {
 
-            $request->validate([
-                'nombre' => 'required|string|max:50',
-            ]);
-
-
-            $categoria = Categoria::findOrFail($categoriaId);
+            $categoria = Categoria::findOrFail($id);
 
             $categoria->nombre = $request->nombre;
 

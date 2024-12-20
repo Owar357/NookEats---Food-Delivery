@@ -1,10 +1,11 @@
 @extends('adminlte::page')
 
-@section('title', 'NookEats')
+@section('title','NookEats')
+
 
 @section('content')
 <div id="app">
-  <añadir-comidas-component></añadir-comidas-component>
+    <editar-categorias-component></editar-categorias-component>
 </div>
 @stop
 

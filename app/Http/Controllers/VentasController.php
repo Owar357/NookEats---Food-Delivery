@@ -28,7 +28,7 @@ class VentasController extends Controller
 
       $restauranteId = $sessionUsuario->restaurante->id;
       $pedidos = Pedido::with(['user:id,name', 'pedidoComidas.comidaRestaurante'])->where('estado_pedido', 'P')->  //primero busca los pedidos que esten pendientes Y traemos la info del usaurio
-        whereHas('pedidoComidas.comidaRestaurante.categoria.restaurante', function ($query) use ($restauranteId) {
+        whereHas('pedidComidoas.comidaRestaurante.categoria.restaurante', function ($query) use ($restauranteId) {
           $query->where('id', $restauranteId); //filtramos hasta verificar que el id del restaunte coincida de la comidas  coincida  con el existente
         })->get();
 
@@ -66,10 +66,8 @@ class VentasController extends Controller
         $pedido = Pedido::findorFail($id);
 
         if ($pedido->estado_pedido == 'P') {
-          $pedido->estado_pedido = 'E'; //En camino 
-        } else if ($pedido->estado_pedido == 'E') {
-          $pedido->estado_pedido = 'F'; //Finalizado
-        } else if ($pedido->estado_pedido == 'F' || $pedido->estado_pedido == 'C') {
+          $pedido->estado_pedido = 'A';  
+        } else {
           return response()->json([
             'status' => 'error',
             'message' => 'No se puede modificar el estado, el pedido  ya esta Finalizado o Cancelado '
@@ -103,12 +101,23 @@ class VentasController extends Controller
 
 
         // Consulta los pedidos finalizados
-        $pedidos = Pedido::with(['pedidoComidas.comidaRestaurante'])
-            ->where('estado_pedido', 'F')
+        $pedidos = Pedido::with(['user:id,name','pedidoComidas'])
+            ->where('estado_pedido', 'A')
             ->whereHas('pedidoComidas.comidaRestaurante.categoria.restaurante', function ($query) use ($restauranteId) {
-                $query->where('id', $restauranteId);
+                $query->where('id',$restauranteId);
             })
-            ->get();
+            ->get()
+            ->map(function($pedido){
+              return [
+               'id' => $pedido -> id,
+               'numeroPedido' => $pedido -> numero_pedido,
+               'fechaHoraPedido'  => $pedido ->fecha_hora_pedido,
+               'total' => $pedido -> total,
+               'metodoPago' => $pedido -> metodo_pago,
+               'estadoPedido' => $pedido -> estado_pedido,
+               'usuario' =>  $pedido -> user -> name,
+              ];
+            });
 
       return response()->json([
         'status' => 'ok',

@@ -28,7 +28,7 @@ class VentasController extends Controller
 
       $restauranteId = $sessionUsuario->restaurante->id;
       $pedidos = Pedido::with(['user:id,name', 'pedidoComidas.comidaRestaurante'])->where('estado_pedido', 'P')->  //primero busca los pedidos que esten pendientes Y traemos la info del usaurio
-        whereHas('pedidComidoas.comidaRestaurante.categoria.restaurante', function ($query) use ($restauranteId) {
+        whereHas('pedidoComidas.comidaRestaurante.categoria.restaurante', function ($query) use ($restauranteId) {
           $query->where('id', $restauranteId); //filtramos hasta verificar que el id del restaunte coincida de la comidas  coincida  con el existente
         })->get();
 
@@ -116,6 +116,17 @@ class VentasController extends Controller
                'metodoPago' => $pedido -> metodo_pago,
                'estadoPedido' => $pedido -> estado_pedido,
                'usuario' =>  $pedido -> user -> name,
+               'detallePedido' => $pedido -> pedidoComidas ->map(function($detalle){
+                   return[
+                    'nombreComida' => $detalle -> nombre_comida,
+                    'cantidad' => $detalle -> cantidad,
+                    'precio' => $detalle -> precio,
+                    'precioDescuento' => $detalle -> precio_descuento,
+                    'estadoPromocion' => $detalle -> promocion_activa,
+                    'nota' => $detalle -> nota,
+                  ];
+
+               })
               ];
             });
 
@@ -135,5 +146,18 @@ class VentasController extends Controller
   }
 
 
- 
+
+  //*--------------Seccion de vistas -----------------
+
+  public function viewHistorialCompras(){
+
+    return view('restadmin.historial-compras');
+  }
+
+  public function viewPedidosRestaurante(){
+
+    return view('restadmin.listar-pedidos');
+  }
+
+
 }

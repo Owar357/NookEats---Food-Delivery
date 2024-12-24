@@ -357,7 +357,7 @@ class ComidaRestauranteController extends Controller
                 'message' => 'No se ha podido guardar la nueva categoría.'
             ], 500);
         } catch (\Throwable $th) {
-            return response()->json(['status' => 'error', 'message' => 'Ocurrio un error al intentar crear la categoria'], 500);
+            return response()->json(['status' => 'error', 'message' => 'Ocurrio un error al intentar crear la categoria'. $th->getMessage()], 500);
         }
     }
 

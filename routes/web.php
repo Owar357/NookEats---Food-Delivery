@@ -57,19 +57,18 @@ Route::middleware('auth.rest')->prefix('admin/rest/comida')->group(function () {
 
 
     //**Rutas para pedidos */
+    Route::get('/pedidos',[VentasController::class, 'viewPedidosRestaurante'])->name('pedidos');
     Route::get('/pedidos/listar',[VentasController::class,'verPedidosRestaurante']);
     Route::patch('/pedido/{id}/estado',[VentasController::class,'modificarEstadoPedido']);
-    Route::get('/ventas/historial',[VentasController::class,'verHistorialVentas']);
+
+
+    Route::get('/ventas/historial',[VentasController::class, 'viewHistorialCompras'])->name('ventas.historial');
+    Route::get('/ventas/historial/listar',[VentasController::class,'verHistorialVentas']);
 });
 
 
 
 
-Route::middleware('auth.rest')->group(function(){
- 
-
-
-});
 
 Route::middleware('auth.rest')->group(function(){
 Route::post('/registro',[RestaurantePerfilController::class,'envioFormularioRegistro']);//***/

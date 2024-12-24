@@ -262,7 +262,7 @@ export default {
 
         Swal.fire({
           toast: true,
-          background: 'black',
+          background: 'black',  
           position: 'top-end',
           icon: 'success',
           title: 'Categoria añadida con exito',

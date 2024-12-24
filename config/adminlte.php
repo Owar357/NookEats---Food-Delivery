@@ -330,7 +330,34 @@ return [
             'route' => 'formularioR',
             'icon' => 'mdi mdi-store-plus',
         ],
+
+
+        
         //Seccion para mostrar las rutas del admin restaurante
+        [
+            'text' => 'Pedidos',
+            'icon' => 'mdi mdi-clipboard-list-outline',
+             'can' => 'admin.rest', 
+            'submenu' =>[
+
+                [ 
+                    'text' => 'Gestion de Pedidos',
+                    'route' => 'pedidos',
+                    'icon' => 'mdi mdi-truck-delivery',
+                ],
+              
+
+                [ 
+                    'text' => 'Historial de Pedidos',
+                    'route' => 'ventas.historial',
+                    'icon' => 'mdi mdi-history',
+                ],
+              
+
+            ],
+       
+        ],
+
         [
             'text' => 'Comida',
             'icon' => 'mdi mdi-food',

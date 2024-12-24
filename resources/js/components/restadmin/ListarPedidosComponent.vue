@@ -1,7 +1,16 @@
 <template>
     <v-container>
+       
+        <template v-if="pedidos.filter(p => p.estado_pedido !== 'A').length === 0">
+  <v-empty-state
+    headline="¡Nada por ahora! Regresa más tarde "
+    text="Aún no tienes pedidos, pero estate listo, ¡el siguiente podría llegar pronto!"
+    title="Vuelve más tarde y revisa si hay nuevos pedidos"
+    icon="mdi mdi-clipboard" size="150"
+  ></v-empty-state>
+</template>
+
         <v-row>
-            <!-- Iterate over each pedido -->
             <v-col v-for="pedido in pedidos.filter(p => p.estado_pedido !== 'A').slice(0, 3)" :key="pedido.id" cols="12"
                 sm="4">
                 <v-card hover variant="flat">

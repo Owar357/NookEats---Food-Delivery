@@ -61,9 +61,21 @@ Route::middleware('auth.rest')->prefix('admin/rest/comida')->group(function () {
     Route::get('/pedidos/listar',[VentasController::class,'verPedidosRestaurante']);
     Route::patch('/pedido/{id}/estado',[VentasController::class,'modificarEstadoPedido']);
 
-
+    //**Rutas para Historial de Ventas */
     Route::get('/ventas/historial',[VentasController::class, 'viewHistorialCompras'])->name('ventas.historial');
     Route::get('/ventas/historial/listar',[VentasController::class,'verHistorialVentas']);
+
+
+
+    //**Ruta de los Horarios *
+    Route::get('/horario',[RestaurantePerfilController::class,'HorariosView'])->name('horarios.lista');
+    Route::get('/horario/config',[RestaurantePerfilController::class,'listarHorarios']);
+    Route::post('/horario/config/anadir',[RestaurantePerfilController::class,'agregarHorario']);
+    Route::delete('/horario/config/eliminar/{id}',[RestaurantePerfilController::class,'eliminarHorario']);
+    Route::put('/horario/config/editar/{id}',[RestaurantePerfilController::class,'editarHorario']);
+
+
+
 });
 
 
@@ -73,10 +85,10 @@ Route::middleware('auth.rest')->prefix('admin/rest/comida')->group(function () {
 Route::middleware('auth.rest')->group(function(){
 Route::post('/registro',[RestaurantePerfilController::class,'envioFormularioRegistro']);//***/
 Route::post('restaurante/config/imagen',[RestaurantePerfilController::class,'añadirActualizarImagen']);
-Route::get('restaurante/config/horario',[RestaurantePerfilController::class,'listarHorarios']);
-Route::post('restaurante/config/horario',[RestaurantePerfilController::class,'agregarHorario']);
-Route::put('restaurante/config/horario/{id}',[RestaurantePerfilController::class,'editarHorario']);
-Route::delete('restaurante/config/horario/{id}',[RestaurantePerfilController::class,'eliminarHorario']);
+
+
+
+
 Route::get('/seleccionar/negocio',[RestaurantePerfilController::class,'listarTipoNegocio']);//***/
 //ver configs nos hacen falta.
 });

@@ -6,7 +6,7 @@
 
 @section('content')
 <div id="app">
-  <historial-compras-component></historial-compras-component>
+   <horarios-component></horarios-component>
 </div>
 @stop
 

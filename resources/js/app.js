@@ -23,7 +23,8 @@ import { createVuetify } from 'vuetify';
 import 'vuetify/styles'; // Importa los estilos de Vuetify
 import * as components from 'vuetify/components';
 import * as directives from 'vuetify/directives';
-import {es} from 'vuetify/locale';
+import { VTimePicker } from 'vuetify/labs/VTimePicker';
+
 
 
 import '@mdi/font/css/materialdesignicons.css'; // Iconos
@@ -32,9 +33,8 @@ import '@mdi/font/css/materialdesignicons.css'; // Iconos
 const vuetify = createVuetify({
     components,
     directives,
-    lang:{
-      locales:{es},
-      current: 'es',
+    components: {
+      VTimePicker,
     },
   });
  

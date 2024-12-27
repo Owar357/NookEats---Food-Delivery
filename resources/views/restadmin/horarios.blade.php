@@ -2,11 +2,11 @@
 
 @section('title','Nookeats')
 
+
 @section('content')
 <div id='app'>
-    <historial-compras-component></historial-compras-component>
-</div>
-
+    <horarios-component></horarios-component> 
+</div> 
 @stop
 
 

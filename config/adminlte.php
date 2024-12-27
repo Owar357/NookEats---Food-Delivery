@@ -333,7 +333,7 @@ return [
 
 
         
-        //Seccion para mostrar las rutas del admin restaurante
+        //-------------------------Seccion para mostrar las rutas del admin restaurante----------------------------
         [
             'text' => 'Pedidos',
             'icon' => 'mdi mdi-clipboard-list-outline',
@@ -358,7 +358,7 @@ return [
        
         ],
 
-        [
+       [ 
             'text' => 'Comida',
             'icon' => 'mdi mdi-food',
              'can' => 'admin.rest', 
@@ -386,6 +386,13 @@ return [
                     'route' => 'comida.categorias',
                 ],
             ],
+        ],
+
+
+        [
+            'text' => 'Horarios',
+            'route' => 'horarios.lista',
+            'icon' => 'mdi mdi-clock-outline',
         ],
     ],
 

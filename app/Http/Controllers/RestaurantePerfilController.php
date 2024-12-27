@@ -73,9 +73,7 @@ class RestaurantePerfilController extends Controller
   }
   
    
-  public function viewFormulario(){
-      return view ('user.formulario');
-  }
+  
 
   
   public function añadirActualizarImagen(Request $request)
@@ -114,21 +112,14 @@ class RestaurantePerfilController extends Controller
   public function agregarHorario(Request $request)
   {
     try {
-      $request->validate([
-        //formato 24 hora por que eso acepta la bd;  ejemplo 3:45
-        'hora_apertura' => 'required|date_format:H:i',
-        'hora_cierra' => 'required|date_format:H:i|after_or_equal:hora_apertura',
-        'ubicacion' => 'required|string|in:lunes,martes,miércoles,jueves,viernes,sábado,domingo',
-      ]);
-
       $sesionUsuario = Auth::user();
       $restauranteId = $sesionUsuario->restaurante->id;
 
       $horarios = new Horario();
 
-      $horarios->hora_apertura = $request['hora_apertura'];
-      $horarios->hora_cierre = $request['hora_cierre'];
-      $horarios->horario_dia = $request['horario_dia'];
+      $horarios->horario_dia = $request['Dia'];
+      $horarios->hora_apertura = $request['horaApertura'];
+      $horarios->hora_cierre = $request['horaCierre'];
       $horarios->restaurante_id = $restauranteId;
 
       if ($horarios->save()) {
@@ -144,15 +135,10 @@ class RestaurantePerfilController extends Controller
     try {
       $horario = Horario::findOrFail($horarioId);
 
-      $request->validate([
-        //formato 24 hora por que eso acepta la bd;  ejemplo 3:45
-        'hora_apertura' => 'required|date_format:H:i',
-        'hora_cierra' => 'required|date_format:H:i|after_or_equal:hora_apertura',
-        'ubicacion' => 'required|string|in:lunes,martes,miércoles,jueves,viernes,sábado,domingo',
-      ]);
-      $horario->hora_apertura = $request->hora_apertura;
-      $horario->hora_cierre = $request->hora_cierre;
-      $horario->horario_dia = $request->horario_dia;
+      
+      $horario->hora_apertura = $request->entrada;
+      $horario->hora_cierre = $request->salida;
+      $horario->horario_dia = $request->dia;
       if ($horario->save()) {
         return response()->json(['status' => 'ok', 'message' => 'se ha editado el horario correctamente'], 200);
       }
@@ -181,7 +167,7 @@ class RestaurantePerfilController extends Controller
       $sesionUsuario = Auth::user();
       $horarios = $sesionUsuario->restaurante->horarios;
 
-      return response()->json(['status' => 'ok', 'Horarios_de_trabajo' => $horarios,], 200);
+      return response()->json(['status' => 'ok', 'horarios' => $horarios,], 200);
 
 
       if ($horarios->empty) {
@@ -193,7 +179,7 @@ class RestaurantePerfilController extends Controller
     }
   }
 
-
+  
   public function listarTipoNegocio()
   {
     try {
@@ -204,4 +190,17 @@ class RestaurantePerfilController extends Controller
       return response()->json(['status' => 'error', 'message' => 'Ocurrio un error inesperado'], 500);
     }
   }
+
+
+   //-----------SECCION DE VISTAS-------------
+
+    public function HorariosView(){
+      return view('restadmin.horarios');
+    }
+
+
+    public function viewFormulario(){
+      return view ('user.formulario');
+  }
 }
+

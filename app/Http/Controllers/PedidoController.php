@@ -32,48 +32,43 @@ class PedidoController extends Controller
   public function  realizarPedido(Request $request)
   {
     try {
-     
+
       DB::beginTransaction();
       $pedido = new Pedido();
       $pedido->fecha_hora_pedido = now();
-      $pedido-> numero_generado = $this->numerodePedido();
+      $pedido->numero_generado = $this->numerodePedido();
       $pedido->metodo_pago = $request->metodo_pago;
-      
+
       $pedido->id_usuario = Auth::user()->id;
       $pedido->total = $request->total;
 
-      if (!$pedido->save()){
-         
+      if (!$pedido->save()) {
+
         throw new  \Exception('Ocurrio un error al guardar el pedido en la base de datos');
-         
-      } 
-        foreach ($request->pedido_comida as $comida) {
-          $pedidoComida = new PedidoComida();
-          $pedidoComida->cantidad = $comida['cantidad'];
-          $pedidoComida->nota = $comida['nota'];
-          $pedidoComida->pedido_id = $pedido->id;
-          $pedidoComida->nombre_comida = $comida['nombre'];
-          $pedidoComida -> precio = $comida['precio'];
-          $pedidoComida -> precio_descuento = $comida['precioDescuento'];
-          $pedidoComida -> promocion_activa = $comida['estadoPromocion'];
+      }
+      foreach ($request->pedido_comida as $comida) {
+        $pedidoComida = new PedidoComida();
+        $pedidoComida->cantidad = $comida['cantidad'];
+        $pedidoComida->nota = $comida['nota'];
+        $pedidoComida->pedido_id = $pedido->id;
+        $pedidoComida->nombre_comida = $comida['nombre'];
+        $pedidoComida->precio = $comida['precio'];
+        $pedidoComida->precio_descuento = $comida['precioDescuento'];
+        $pedidoComida->promocion_activa = $comida['estadoPromocion'];
 
-          if (!$pedidoComida->save()) {
-            DB::rollBack();
-            return response()->json(['status' => 'error', 'message' => 'Ocurrió un error al guardar un elemento del pedido'], 500);
-          }
+        if (!$pedidoComida->save()) {
+          DB::rollBack();
+          return response()->json(['status' => 'error', 'message' => 'Ocurrió un error al guardar un elemento del pedido'], 500);
         }
+      }
 
-        DB::commit();
-        return response()->json(['status' => 'created', 'message' => 'El pedido se ha realizado con éxito'], 201);
-      
-      
-      
-    
+      DB::commit();
+      return response()->json(['status' => 'created', 'message' => 'El pedido se ha realizado con éxito'], 201);
     } catch (QueryException $q) {
       DB::rollBack();
       return response()->json([
         'status' => 'error',
-        'message' => 'Ha ocurrido un error al realizar el pedido. Por favor, intente nuevamente, si el problema persiste, repórtelo.' 
+        'message' => 'Ha ocurrido un error al realizar el pedido. Por favor, intente nuevamente, si el problema persiste, repórtelo.'
       ], 500);
     }
   }
@@ -97,25 +92,25 @@ class PedidoController extends Controller
 
 
   //Permite ver  el historial de compras del usuario asi como el pedido mas reciente
-   // Definir el ID del usuario que estamos buscando las compras.
-        // En este caso, se asigna manualmente a 1 para pruebas.
-        // Cuando la autenticación esté implementada, se descomenta la siguiente línea
-        // para usar el ID del usuario autenticado.
-         
+  // Definir el ID del usuario que estamos buscando las compras.
+  // En este caso, se asigna manualmente a 1 para pruebas.
+  // Cuando la autenticación esté implementada, se descomenta la siguiente línea
+  // para usar el ID del usuario autenticado.
 
-        // $id = Auth::id(); // Obtiene el ID del usuario autenticado
-        // Recupar todos los pedidos realizados por el usuario con el ID especificado
-        // La consulta busca pedidos donde 'usuario_id' es igual al ID del usuario
-        // que ha realizado las compras.
+
+  // $id = Auth::id(); // Obtiene el ID del usuario autenticado
+  // Recupar todos los pedidos realizados por el usuario con el ID especificado
+  // La consulta busca pedidos donde 'usuario_id' es igual al ID del usuario
+  // que ha realizado las compras.
   public function  verHistorialCompras()
   {
     try {
- 
+
       $pedidos = Auth::user()->pedidos;
 
       return response()->json(['status' => 'ok', 'message' => 'Historial de pedidos', 'data' => $pedidos,], 200);
     } catch (\Throwable $th) {
- 
+
       return response()->json(['status' => 'fail', 'message' => 'ocurrio un error inesperado'], 500);
     }
   }
@@ -156,79 +151,124 @@ class PedidoController extends Controller
   }
 
 
-   //**funcion que permitira ver al usuario ver el  perfil completo del restaurante seleccionado*/
-    //**cosas como foto de perfi, horarios, comidas con sus respectivo datos y categoria disponibles del restaurante ademas de su descripicion*/    
-   
-     //!Agregar funcionamiento para traer imagen del rest y mostrarlo
-    public function verPerfilRestaurante($restaurante_id)
-    {
+  //**funcion que permitira ver al usuario ver el  perfil completo del restaurante seleccionado*/
+  //**cosas como foto de perfi, horarios, comidas con sus respectivo datos y categoria disponibles del restaurante ademas de su descripicion*/    
+
+  //!Agregar funcionamiento para traer imagen del rest y mostrarlo
+  public function verPerfilRestaurante($restaurante_id)
+  {
     try {
-     $perfilVentas = Restaurante::with(['horarios','categorias.comidasRestaurante'])->where('id',$restaurante_id)->get();
+      $perfilVentas = Restaurante::with(['horarios', 'categorias.comidasRestaurante'])->where('id', $restaurante_id)
+        ->get()
+        ->map(function ($restaurante) {
 
-      return response()->json(['status' => 'ok', 'message' => 'informacion del perfil restaurante recuperada con exito', 'data' => $perfilVentas],200);
-     } catch (\Throwable $th) {
-       return response()->json(['status' => 'ok','message' => 'ocurrio un error inesperado'],500);
+          return [
+            'imgPerfil' => $restaurante->imagen_hash
+            ?asset('storage/img/foto_perfil_restaurante/'. $restaurante->imagen_hash )
+            :asset('storage/banner.png'),
+            'nombre' => $restaurante->nombre,
+            'direccion' => $restaurante->ubicacion,
+            'horarios' => $restaurante->horarios->map(function ($horario) {
+              return [
+                'dia' => $horario->horario_dia,
+                'entrada' => $horario->hora_apertura,
+                'salida' => $horario->hora_cierre,
+              ];
+            }),
+            'categorias' =>  $restaurante->categorias->map(function ($categoria) {
+              return [
+                'nombreCategoria' => $categoria->nombre,
+                'comidas' => $categoria->comidasRestaurante->map(function ($comida) {
+
+                  return [
+                    'nombreComida' => $comida->nombre,
+                    'precio' => $comida->precio,
+                    'descripcionComida' => $comida->descripcion,
+                    'precioDescuento' => $comida->precioDescuento,
+                    'promocionActiva' => $comida->promocion_activa,
+                    'estadoComida' => $comida->disponibilidad,
+                    'imagenRuta' => $comida->imagen_hash
+                    ? asset('storage/img/comida/'. $comida -> imagen_hash) 
+                    : asset('imagen/default_comida.png'),
+                    'imagen' => $comida->imagen_original,
+                  ];
+                })
+
+              ];
+            })
+
+          ];
+        });
+
+      return response()->json(['status' => 'ok', 'message' => 'informacion del perfil restaurante recuperada con exito', 'perfil' => $perfilVentas], 200);
+    } catch (\Throwable $th) {
+      return response()->json(['status' => 'ok', 'message' => 'ocurrio un error inesperado'], 500);
     }
-    }
+  }
 
 
-    
+
   //**Lista de restaurante para la busqueda delos mismos */
-    public function listaRestaurantes()
-    {
-      try {
-        $listaRestaurantes = Restaurante::select('id','nombre','imagen_original','imagen_hash','descripcion')->get();
+  public function listaRestaurantes()
+  {
+    try {
+      $listaRestaurantes = Restaurante::select('id', 'nombre', 'imagen_original', 'imagen_hash', 'descripcion')->get();
 
-   
-        $data  = $listaRestaurantes -> map(function($listaRestaurantes){
-          return[
-             'id' => $listaRestaurantes -> id,
-             'nombre'=> $listaRestaurantes -> nombre,
-             'imagen_hash' => $listaRestaurantes -> imagen_hash
-              ? asset('storage/img/foto_perfil_restuarante/' .$listaRestaurantes -> imagen_hash)
-              : asset('image/default_img_logo.png'),
-              'imagen_original' => $listaRestaurantes ->imagen_original,
-             'descripcion' => $listaRestaurantes -> descripcion
-          ];          
-        }); 
-        return response()->json([ 'restaurantes' =>  $data],200);
-      } catch (\Throwable $th) {
-        return response()->json(['status' => 'error', 'message' => 'Ocurrio un error inesperado', ],500);
-      }
+
+      $data  = $listaRestaurantes->map(function ($listaRestaurantes) {
+        return [
+          'id' => $listaRestaurantes->id,
+          'nombre' => $listaRestaurantes->nombre,
+          'imagen_hash' => $listaRestaurantes->imagen_hash
+            ? asset('storage/img/foto_perfil_restuarante/' . $listaRestaurantes->imagen_hash)
+            : asset('image/default_img_logo.png'),
+          'imagen_original' => $listaRestaurantes->imagen_original,
+          'descripcion' => $listaRestaurantes->descripcion
+        ];
+      });
+      return response()->json(['restaurantes' =>  $data], 200);
+    } catch (\Throwable $th) {
+      return response()->json(['status' => 'error', 'message' => 'Ocurrio un error inesperado',], 500);
     }
+  }
 
 
-    public function  restaurantesRecientes(){
+  public function  restaurantesRecientes()
+  {
 
-      try {
-        $restaurantes = Restaurante::with(['tipoNegocio'])->latest()->take(6)->get();
+    try {
+      $restaurantes = Restaurante::with(['tipoNegocio'])->latest()->take(6)->get();
 
-        $response = $restaurantes->map(function($restaurante){
-          
-          
-          
-        return[
-        'id' => $restaurante -> id,
-        'nombre' => $restaurante->nombre,
-       
-        'descripcion' => $restaurante -> descripcion,
-        'imagen' => $restaurante ->  imagen
-        ? asset('storage/image/foto_perfil_restaurante/' . $restaurante -> imagen_hash)
-        : asset ('storage/imagen_default.avif'),
-        'imagenOriginal' => $restaurante -> imagen_original,
-        'tipoNegocio' => 
-         ['id' => $restaurante -> tipoNegocio -> id,
-          'nombre' => $restaurante -> tipoNegocio -> nombre,
-         ]
+      $response = $restaurantes->map(function ($restaurante) {
+
+
+
+        return [
+          'id' => $restaurante->id,
+          'nombre' => $restaurante->nombre,
+
+          'descripcion' => $restaurante->descripcion,
+          'imagen' => $restaurante->imagen
+            ? asset('storage/image/foto_perfil_restaurante/' . $restaurante->imagen_hash)
+            : asset('storage/imagen_default.avif'),
+          'imagenOriginal' => $restaurante->imagen_original,
+          'tipoNegocio' =>
+          [
+            'id' => $restaurante->tipoNegocio->id,
+            'nombre' => $restaurante->tipoNegocio->nombre,
+          ]
         ];
       });
 
-        return response()->json(['status'=> 'ok', 'restaurante' => $response ],200);
-      } catch (\Throwable $th) {
-        return response()->json(['status'=> 'error', 'Message' =>'Ocurrio un error inesperado'],500);
-      }
-   
-
-
+      return response()->json(['status' => 'ok', 'restaurante' => $response], 200);
+    } catch (\Throwable $th) {
+      return response()->json(['status' => 'error', 'Message' => 'Ocurrio un error inesperado'], 500);
     }
+  }
+   
+   public function  verPerfilRestauranteView(){
+     
+     return view('user.perfil-venta-restaurante');
+
+   }
 }

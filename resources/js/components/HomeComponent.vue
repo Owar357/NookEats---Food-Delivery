@@ -17,7 +17,7 @@
   </v-row>  
 
 <!-- Sección para las cards -->
-<h1 class="display-5" style="font-weight:900;">Restaurantes Nuevos</h1>
+<h1 class="display-5" style="font-weight:900;">Nuevos Restaurantes Por Descubrir</h1>
    <v-row justify="start">
     <v-col v-for="(restaurante, index) in restaurantes " :key="index" cols="12" md="2" class="mt-3" >
       <v-card

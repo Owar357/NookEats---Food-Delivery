@@ -7,6 +7,7 @@ use App\Http\Controllers\RestaurantePerfilController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\VentasController;
 use App\Models\ComidaRestaurante;
+use App\Models\PedidoComida;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -99,7 +100,12 @@ Route::get('/seleccionar/negocio',[RestaurantePerfilController::class,'listarTip
     Route::post('usuario/pedido',[PedidoController::class,'realizarPedido']);
     Route::get('usuario/pedidos',[PedidoController::class,'verHistorialCompras']);
     Route::put('usuario/pedido/{id}/cancelar',[PedidoController::class,'cancelarCompra']);
-    Route::get('restaurantes/{id}/menu/',[PedidoController::class,'verPerfilRestaurante']);
+    
+
+    Route::get('/restaurante/perfil',[PedidoController::class,'verPerfilRestauranteView']);
+    Route::get('/{id}/menu/',[PedidoController::class,'verPerfilRestaurante']);
+
+
     Route::get('restaurantes/lista',[PedidoController::class,'listaRestaurantes']);
 
     //Configuracion del perfil

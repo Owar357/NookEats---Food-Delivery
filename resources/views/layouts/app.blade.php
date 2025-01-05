@@ -22,28 +22,5 @@
                 @yield('content')
             </main>
         </div>
-
-
-
-        <footer class="bg-dark text-white text-center py-3">
-            <div class="container">
-                <p class="mb-0">&copy; {{date('Y')}} Nookeats. Todos los derechos Reservados </p>
-                <p class="mb-0">
-                    <a href="/politica-privacidad" class="text-light">Política de Privacidad</a> |
-                    <a href="/terminos-condiciones" class="text-light">Términos y Condiciones</a>
-                </p>
-                <p class="mt-2">
-                    <a href="https://www.facebook.com" target="_blank" class="text-light me-2">
-                        <i class="fab fa-facebook"></i>
-                    </a>
-                    <a href="https://www.twitter.com" target="_blank" class="text-light me-2">
-                        <i class="fab fa-twitter"></i>
-                    </a>
-                    <a href="https://www.instagram.com" target="_blank" class="text-light">
-                        <i class="fab fa-instagram"></i>
-                    </a>
-                </p>    
-            </div>
-        </footer>
     </body>
     </html>

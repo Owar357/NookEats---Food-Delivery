@@ -24,6 +24,7 @@
         "sweetalert2": "^11.14.5",
         "vite-plugin-vuetify": "^2.0.4",
         "vue-axios": "^3.5.2",
+        "vue-router": "^4.5.0",
         "vue-sweetalert2": "^5.0.11",
         "vuetify": "^3.7.3"
     }

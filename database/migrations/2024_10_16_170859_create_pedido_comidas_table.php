@@ -19,10 +19,9 @@ return new class extends Migration
             $table->decimal('precio', 10, 2);
             $table->decimal('precio_descuento', 10, 2)->default(0.00);
             $table->boolean('promocion_activa');
+            $table->decimal('precioCantidad',10,2)->default(0.00);
             $table->unsignedBigInteger('pedido_id');
             $table->foreign('pedido_id')->references('id')->on('pedidos');
-            $table->unsignedBigInteger('comida_restaurante_id');
-            $table->foreign('comida_restaurante_id')->references('id')->on('comidas_restaurante');
             $table->timestamps();
         });
     }

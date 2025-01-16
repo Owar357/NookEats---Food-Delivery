@@ -4,7 +4,7 @@
 
 @section('content')
 <div id="app">
-    <perfil-venta-restaurante-component></perfil-venta-restaurante-component>
+    <perfil-venta-restaurante-component :restaurante-id = "{{$id}}"></perfil-venta-restaurante-component>
 </div>
    
 @stop

@@ -8,6 +8,7 @@ import './bootstrap';
 import { createApp } from 'vue';
 
 
+
 //* importaciones de axios
 import axios from 'axios';
 import VueAxios from 'vue-axios';
@@ -26,8 +27,36 @@ import * as directives from 'vuetify/directives';
 import { VTimePicker } from 'vuetify/labs/VTimePicker';
 
 
-
 import '@mdi/font/css/materialdesignicons.css'; // Iconos
+
+//importacion para vueRouter
+import { createRouter,createWebHistory } from 'vue-router';
+
+//Componentes
+
+import HomeComponent from './components/HomeComponent.vue';
+import PerfilVentaRestauranteComponent from './components/restadmin/PerfilVentaRestauranteComponent.vue';
+
+const routes =[
+  {
+    path: '/',
+    name: 'Home',
+    component:HomeComponent
+  },
+  {
+    path:'/restaurante/:id',
+    name:'RestauranteDetalle',
+    component: PerfilVentaRestauranteComponent,
+  },
+];
+
+
+const router = createRouter({
+  history:createWebHistory(),
+  routes,
+})
+
+//Configuracion de rutas
 
 
 const vuetify = createVuetify({
@@ -72,9 +101,16 @@ app.config.globalProperties.axios = axios;
 
 
 
+
  app.use(vuetify);
  app.use(VueAxios, axios);
  app.use(VueSweetalert2);
+
+
+ app.use(router);
  
 
 app.mount('#app');
+
+// Exportar la instancia de la aplicación
+export default app;

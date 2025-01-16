@@ -33,28 +33,39 @@ class PedidoController extends Controller
   {
     try {
 
+
+      if (!Auth::check()) {
+        return response()->json([
+            'status' => 'unauthorized',
+            'message' => 'Usuario no autenticado. Por favor, inicie sesión para realizar un pedido.'
+        ], 401); // 401 Unauthorized
+    }
+
+      
       DB::beginTransaction();
+
       $pedido = new Pedido();
       $pedido->fecha_hora_pedido = now();
-      $pedido->numero_generado = $this->numerodePedido();
-      $pedido->metodo_pago = $request->metodo_pago;
+      $pedido->numero_pedido = $this->numerodePedido();
+      $pedido->metodo_pago = $request->metodoPago;  
 
-      $pedido->id_usuario = Auth::user()->id;
+      $pedido->usuario_id = Auth::user()->id;
       $pedido->total = $request->total;
 
       if (!$pedido->save()) {
-
         throw new  \Exception('Ocurrio un error al guardar el pedido en la base de datos');
       }
+      
       foreach ($request->pedido_comida as $comida) {
         $pedidoComida = new PedidoComida();
-        $pedidoComida->cantidad = $comida['cantidad'];
-        $pedidoComida->nota = $comida['nota'];
         $pedidoComida->pedido_id = $pedido->id;
-        $pedidoComida->nombre_comida = $comida['nombre'];
-        $pedidoComida->precio = $comida['precio'];
+        $pedidoComida->cantidad = $comida['cantidad'];
+        $pedidoComida -> nombre_comida = $comida['nombre'];
+        $pedidoComida->nota = $comida['nota'];
+        $pedidoComida->precio = $comida['precioOriginal'];
         $pedidoComida->precio_descuento = $comida['precioDescuento'];
-        $pedidoComida->promocion_activa = $comida['estadoPromocion'];
+        $pedidoComida->promocion_activa = $comida['promocionActiva'];
+        $pedidoComida->precioCantidad = $comida['precioFinalCantidadComida'];
 
         if (!$pedidoComida->save()) {
           DB::rollBack();
@@ -68,7 +79,7 @@ class PedidoController extends Controller
       DB::rollBack();
       return response()->json([
         'status' => 'error',
-        'message' => 'Ha ocurrido un error al realizar el pedido. Por favor, intente nuevamente, si el problema persiste, repórtelo.'
+        'message' => 'Ha ocurrido un error al realizar el pedido'
       ], 500);
     }
   }
@@ -163,11 +174,17 @@ class PedidoController extends Controller
         ->map(function ($restaurante) {
 
           return [
-            'imgPerfil' => $restaurante->imagen_hash
+            'imgPerfil' => $restaurante -> imagen_hash
             ?asset('storage/img/foto_perfil_restaurante/'. $restaurante->imagen_hash )
+            :asset('storage/banner.png'),
+            'imgBanner' => $restaurante->imagen_hash_banner
+            ?asset('storage/img/foto_banner_rest/'. $restaurante->imagen_hash_banner )
             :asset('storage/banner.png'),
             'nombre' => $restaurante->nombre,
             'direccion' => $restaurante->ubicacion,
+            'descripcion' => $restaurante -> descripcion,
+            'telefono' => $restaurante -> telefono,
+            'telefonoSecundario'=> $restaurante -> telefono_secundario,
             'horarios' => $restaurante->horarios->map(function ($horario) {
               return [
                 'dia' => $horario->horario_dia,
@@ -248,8 +265,8 @@ class PedidoController extends Controller
           'nombre' => $restaurante->nombre,
 
           'descripcion' => $restaurante->descripcion,
-          'imagen' => $restaurante->imagen
-            ? asset('storage/image/foto_perfil_restaurante/' . $restaurante->imagen_hash)
+          'imagen' => $restaurante->imagen_hash
+            ? asset('storage/img/foto_perfil_restaurante/' . $restaurante->imagen_hash)
             : asset('storage/imagen_default.avif'),
           'imagenOriginal' => $restaurante->imagen_original,
           'tipoNegocio' =>
@@ -266,9 +283,9 @@ class PedidoController extends Controller
     }
   }
    
-   public function  verPerfilRestauranteView(){
+   public function  verPerfilRestauranteView($id){
      
-     return view('user.perfil-venta-restaurante');
+     return view('user.perfil-venta-restaurante', compact('id'));
 
    }
 }

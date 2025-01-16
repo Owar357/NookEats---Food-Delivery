@@ -17,6 +17,8 @@ return new class extends Migration
             $table->string('codigo_operacion',11)->unique();
             $table->string('imagen_original',300)->nullable();
             $table->string('imagen_hash',150)->nullable();
+            $table->string('imagen_original_banner',300)->nullable();
+            $table->string('imagen_hash_banner',150)->nullable();
             $table->string('ubicacion',300);
             $table->string('telefono',15)->unique();
             $table->string('telefono_secundario',15)->nullable();
